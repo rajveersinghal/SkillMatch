@@ -39,32 +39,58 @@ job_description = st.text_area(
 if st.button("Analyze Resume"):
     if resume_file and job_description:
         resume_text = extract_resume_text(resume_file)
-
-        st.subheader("Extracted Resume Text")
-        st.write(resume_text[:1000])  # preview first 1000 chars
-
         jd_text = extract_jd_text(job_description)
-        st.subheader("Job Description Text")
-        st.write(jd_text[:1000])
 
         clean_resume = clean_text(resume_text)
         clean_jd = clean_text(jd_text)
 
-        st.subheader("Cleaned Resume Text")
-        st.write(clean_resume[:800])
+        resume_skills = set(extract_skills(clean_resume, skills))
+        jd_skills = set(extract_skills(clean_jd, skills))
 
-        st.subheader("Cleaned Job Description Text")
-        st.write(clean_jd[:800])
+        # --- Match Logic ---
+        matched_skills = resume_skills.intersection(jd_skills)
+        missing_skills = jd_skills - resume_skills
+        
+        # Calculate Match Score
+        if len(jd_skills) > 0:
+            match_score = (len(matched_skills) / len(jd_skills)) * 100
+        else:
+            match_score = 0
 
-        resume_skills = extract_skills(clean_resume, skills)
-        jd_skills = extract_skills(clean_jd, skills)
+        # --- Display Results ---
+        
+        st.divider()
+        st.subheader("📊 Skill Match Results")
+        
+        # Score Metric
+        st.metric(label="Match Score", value=f"{match_score:.1f}%")
+        
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            st.success(f"✅ Matched Skills ({len(matched_skills)})")
+            if matched_skills:
+                for skill in matched_skills:
+                     st.write(f"- {skill.title()}")
+            else:
+                st.write("No matching skills found.")
 
-        st.subheader("🔍 Skills Found in Resume")
-        st.write(resume_skills)
+        with col2:
+            st.warning(f"⚠️ Missing Skills ({len(missing_skills)})")
+            if missing_skills:
+                 for skill in missing_skills:
+                     st.write(f"- {skill.title()}")
+            else:
+                st.write("Great! You have all the required skills.")
+        
+        st.divider()
+        
+        # Show raw list if needed (expander)
+        with st.expander("See Extracted Data Details"):
+            st.write("**Resume Skills Found:**", list(resume_skills))
+            st.write("**JD Skills Required:**", list(jd_skills))
+            st.write("**Cleaned Resume Text:**", clean_resume[:500] + "...")
+            st.write("**Cleaned JD Text:**", clean_jd[:500] + "...")
 
-        st.subheader("📌 Skills Required in Job Description")
-        st.write(jd_skills)
-
-        st.success("Inputs received successfully!")
     else:
         st.warning("Please upload a resume and enter a job description.")
