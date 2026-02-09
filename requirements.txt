@@ -1,5 +1,12 @@
+fastapi
+uvicorn
+motor
+python-multipart
+passlib[bcrypt]
+python-jose[cryptography]
+python-dotenv
 streamlit
+requests
 pdfplumber
 python-docx
-nltk
-pandas
+email-validator

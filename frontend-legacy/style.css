@@ -1,0 +1,153 @@
+/* Pink/Rose Design System - SkillMatch */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+    --bg-main: #FFF5F5;
+    /* Very Light Pink */
+    --bg-secondary: #FDE2E2;
+    /* Light Pink */
+    --primary: #F9A8A8;
+    /* Rose Pink */
+    --primary-hover: #E88F8F;
+    --secondary-accent: #4A4A4A;
+    /* Dark Grey */
+    --text-main: #4A4A4A;
+    --text-muted: #8E8E8E;
+    --surface: #FFFFFF;
+    --border: rgba(249, 168, 168, 0.2);
+    --shadow: 0 4px 15px rgba(249, 168, 168, 0.1);
+}
+
+/* Base resets and Typography */
+html,
+body,
+[class*="css"] {
+    font-family: 'Outfit', sans-serif !important;
+    color: var(--text-main);
+}
+
+.stApp {
+    background: var(--bg-main);
+}
+
+/* Animations Keyframes */
+@keyframes slideUpFade {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes scaleIn {
+    0% {
+        transform: scale(0.98);
+        opacity: 0;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Main Layout Components */
+.main-title {
+    font-size: 3.5rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--text-main), var(--primary));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-align: center;
+    margin-bottom: 2rem;
+    animation: scaleIn 0.6s ease-out forwards;
+}
+
+.card {
+    background: var(--surface);
+    border-radius: 1rem;
+    padding: 2rem;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    animation: slideUpFade 0.6s ease-out forwards;
+    transition: transform 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+}
+
+/* Button & Input Overrides */
+.stButton>button {
+    background: linear-gradient(135deg, var(--primary), var(--primary-hover)) !important;
+    border-radius: 0.75rem !important;
+    color: white !important;
+    padding: 0.6rem 1.5rem !important;
+    font-weight: 700 !important;
+    border: none !important;
+    transition: all 0.2s ease !important;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.stButton>button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(249, 168, 168, 0.3);
+}
+
+.stTextInput>div>div>input,
+.stTextArea>div>div>textarea {
+    border-radius: 0.75rem !important;
+    border: 1px solid var(--border) !important;
+    padding: 0.8rem !important;
+    transition: border-color 0.3s ease !important;
+}
+
+.stTextInput>div>div>input:focus,
+.stTextArea>div>div>textarea:focus {
+    border-color: var(--primary) !important;
+    box-shadow: 0 0 0 3px rgba(249, 168, 168, 0.1) !important;
+}
+
+/* Sidebar Customization */
+[data-testid="stSidebarNav"] {
+    display: none !important;
+}
+
+[data-testid="stSidebar"] {
+    background-color: var(--bg-secondary) !important;
+    border-right: none !important;
+}
+
+[data-testid="stSidebar"] * {
+    color: var(--text-main) !important;
+}
+
+[data-testid="stSidebar"] button {
+    background: white !important;
+    border: 1px solid var(--border) !important;
+    color: var(--text-main) !important;
+    text-align: left !important;
+    justify-content: flex-start !important;
+    text-transform: none !important;
+    letter-spacing: normal !important;
+    transition: all 0.2s ease !important;
+}
+
+[data-testid="stSidebar"] button:hover {
+    background: var(--bg-main) !important;
+    border-color: var(--primary) !important;
+    transform: translateX(3px) !important;
+}
+
+/* Alert Boxes */
+.stAlert {
+    border: none !important;
+    border-radius: 0.75rem !important;
+    box-shadow: var(--shadow);
+}
