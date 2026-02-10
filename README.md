@@ -10,6 +10,17 @@ SkillMatch is a powerful AI-driven application designed to streamline the recrui
 - **Automated Text Extraction**: Integrated extraction logic to pull content from various file formats.
 - **Interactive Dashboard**: A sleek, modern dashboard built with React and Framer Motion for a premium user experience.
 
+## 📸 Screenshots
+
+### Landing Page
+![Landing Page](assets/screenshots/landing.png)
+
+### Login Page
+![Login Page](assets/screenshots/login.png)
+
+### Dashboard
+![Dashboard](assets/screenshots/dashboard.png)
+
 ## 🛠️ Tech Stack
 
 ### Backend
