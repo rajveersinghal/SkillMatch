@@ -1,75 +1,98 @@
-# SkillMatch 🚀
+# 🧩 SkillMatch - AI Resume Matcher
 
-SkillMatch is a powerful AI-driven application designed to streamline the recruitment process by automatically extracting and analyzing skills from resumes and job descriptions. It leverages FastAPI for a high-performance backend and React for a modern, responsive frontend.
+SkillMatch is an intelligent, AI-powered internal tool designed to match resumes with job descriptions accurately. It leverages Natural Language Processing (NLP) techniques to analyze text, extract skills, and calculate compatibility scores, helping recruiters and hiring managers streamline the screening process.
 
-## ✨ Features
+## 🚀 Key Features
 
-- **User Authentication**: Secure signup and login system using JWT tokens.
-- **Resume Ingestion**: Upload PDF, DOCX, or TXT resumes or paste text directly.
-- **Job Description (JD) Ingestion**: Upload or paste job descriptions to compare against resumes.
-- **Automated Text Extraction**: Integrated extraction logic to pull content from various file formats.
-- **Interactive Dashboard**: A sleek, modern dashboard built with React and Framer Motion for a premium user experience.
-
+*   **Intelligent Matching:** Uses TF-IDF vectorization and cosine similarity to match resumes against job descriptions.
+*   **Skill Extraction:** Automatically identifies key technical and soft skills from documents.
+*   **Detailed Analysis:** Provides a breakdown of matching skills, missing skills, and an overall compatibility score.
+*   **User Management:** Secure authentication system for recruiters to manage their sessions.
+*   **History Tracking:** Saves all analysis results for future reference.
+*   **Modern UI:** Built with Streamlit for a responsive and interactive user experience.
 
 ## 🛠️ Tech Stack
 
-### Backend
-- **Framework**: [FastAPI](https://fastapi.tiangolo.com/) (Python)
-- **Database**: [MongoDB](https://www.mongodb.com/) (using Motor driver)
-- **Security**: JWT Authentication, CORS Middleware
-- **Libraries**: `python-multipart`, `python-jose`, `passlib`, `pdfplumber`, `python-docx`
-
-### Frontend
-- **Framework**: [React](https://reactjs.org/) (Vite)
-- **Styling**: [Tailwind CSS](https://tailwindcss.com/)
-- **Animations**: [Framer Motion](https://www.framer.com/motion/)
-- **Icons**: [Lucide React](https://lucide.dev/)
-
-## 🚀 Getting Started
-
-### Prerequisites
-- Python 3.8+
-- Node.js & npm
-- MongoDB instance (local or Atlas)
-
-### Backend Setup
-1. Navigate to the `backend` directory.
-2. Create a virtual environment:
-   ```bash
-   python -m venv venv
-   source venv/bin/scripts/activate  # On Windows: venv\Scripts\activate
-   ```
-3. Install dependencies:
-   ```bash
-   pip install -r ../requirements.txt
-   ```
-4. Configure `.env` with your MongoDB URI and secret keys.
-5. Run the server:
-   ```bash
-   uvicorn main:app --reload
-   ```
-
-### Frontend Setup
-1. Navigate to the `react-frontend` directory.
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-3. Run the development server:
-   ```bash
-   npm run dev
-   ```
+*   **Frontend:** Streamlit, Custom CSS
+*   **Backend:** FastAPI, Python 3.10+
+*   **Database:** MongoDB Atlas
+*   **NLP:** scikit-learn (TF-IDF), NLTK, spaCy
+*   **Authentication:** JWT (JSON Web Tokens)
+*   **Deployment:** Docker ready (optional)
 
 ## 📂 Project Structure
 
-- `backend/`: FastAPI application code, routes, models, and database logic.
-- `react-frontend/`: React components, pages, and API clients.
-- `data/`: Storage for processed or sample data.
-- `tests/`: Backend unit tests.
+```
+SkillMatch/
+├── backend/            # FastAPI backend application
+│   ├── routers/        # API routes (auth, documents)
+│   └── main.py         # Entry point for the backend
+├── core/               # Core business logic
+│   └── ingestion.py    # Text extraction logic
+├── frontend/           # Streamlit frontend application
+│   ├── app.py          # Main Streamlit app
+│   └── style.css       # Custom styling
+├── nlp/                # NLP processing modules
+│   ├── preprocessing.py # Text cleaning and normalization
+│   └── skill_extractor.py # Skill extraction logic
+├── data/               # Data storage (if local)
+├── requirements.txt    # Project dependencies
+└── README.md           # Project documentation
+```
+
+## ⚙️ Setup & Installation
+
+Follow these steps to set up the project locally.
+
+### 1. Clone the Repository
+```bash
+git clone https://github.com/yourusername/skillmatch.git
+cd skillmatch
+```
+
+### 2. Set Up Virtual Environment
+```bash
+# Windows
+python -m venv venv
+.\venv\Scripts\activate
+
+# Mac/Linux
+python3 -m venv venv
+source venv/bin/activate
+```
+
+### 3. Install Dependencies
+```bash
+pip install -r requirements.txt
+python -m spacy download en_core_web_sm
+```
+
+### 4. Configure Environment Variables
+Create a `.env` file in the root directory and add your configuration:
+```env
+MONGO_URI=your_mongodb_connection_string
+SECRET_KEY=your_secret_key_for_jwt
+ALGORITHM=HS256
+ACCESS_TOKEN_EXPIRE_MINUTES=30
+```
+
+### 5. Run the Application
+
+**Start the Backend Server:**
+```bash
+uvicorn backend.main:app --reload
+```
+The API will be available at `http://localhost:8000`. API Docs at `http://localhost:8000/docs`.
+
+**Start the Frontend Interface:**
+Open a new terminal, activate the environment, and run:
+```bash
+streamlit run frontend/app.py
+```
+The application will open in your browser at `http://localhost:8501`.
 
 ## 🤝 Contributing
-
 Contributions are welcome! Please feel free to submit a Pull Request.
 
----
-Built with ❤️ by [Rajveer Singhal](https://github.com/rajveersinghal)
+## 📄 License
+This project is licensed under the MIT License.

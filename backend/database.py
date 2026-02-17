@@ -1,14 +1,18 @@
+from pymongo import MongoClient
 import os
-from motor.motor_asyncio import AsyncIOMotorClient
 from dotenv import load_dotenv
 
 load_dotenv()
 
-MONGODB_URL = os.getenv("MONGODB_URL", "mongodb://localhost:27017")
-DATABASE_NAME = os.getenv("DATABASE_NAME", "skillmatch")
+MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017/")
+client = MongoClient(MONGO_URI)
+db = client["skillmatch"]
 
-client = AsyncIOMotorClient(MONGODB_URL)
-database = client[DATABASE_NAME]
+def get_db():
+    return db
 
-def get_database():
-    return database
+def get_user_collection():
+    return db["users"]
+
+def get_document_collection():
+    return db["documents"]

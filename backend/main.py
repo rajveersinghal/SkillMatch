@@ -1,9 +1,12 @@
 from fastapi import FastAPI
-from backend.routes import auth_routes, ingestion_routes
 from fastapi.middleware.cors import CORSMiddleware
+from backend.routers import auth, documents
+import uvicorn
+import os
 
 app = FastAPI(title="SkillMatch API")
 
+# CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -12,18 +15,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(auth_routes.router, prefix="/auth", tags=["Authentication"])
-app.include_router(ingestion_routes.router, prefix="/ingestion", tags=["Ingestion"])
+# Routers
+app.include_router(auth.router, prefix="/auth", tags=["Auth"])
+app.include_router(documents.router, prefix="/documents", tags=["Documents"])
 
 @app.get("/")
-async def root():
-    return {"message": "Welcome to SkillMatch API"}
+def read_root():
+    return {"message": "SkillMatch API is running 🚀"}
 
-@app.get("/health")
-async def health():
-    from backend.database import database
-    try:
-        await database.command("ping")
-        return {"status": "healthy", "database": "connected"}
-    except Exception as e:
-        return {"status": "unhealthy", "database": str(e)}
+if __name__ == "__main__":
+    uvicorn.run("backend.main:app", host="0.0.0.0", port=8000, reload=True)

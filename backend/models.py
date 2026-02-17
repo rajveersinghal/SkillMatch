@@ -1,30 +1,33 @@
-from pydantic import BaseModel, EmailStr, Field
-from typing import Optional, List
+from pydantic import BaseModel, EmailStr
 from datetime import datetime
+from typing import Optional
 
-class UserBase(BaseModel):
+class UserLogin(BaseModel):
     email: EmailStr
-
-class UserCreate(UserBase):
     password: str
 
-class UserInDB(UserBase):
-    hashed_password: str
-    id: Optional[str] = Field(None, alias="_id")
+class UserRegister(BaseModel):
+    email: EmailStr
+    password: str
 
 class Token(BaseModel):
     access_token: str
     token_type: str
 
-class TokenData(BaseModel):
-    email: Optional[str] = None
+class DocumentCreate(BaseModel):
+    resume_text: str
+    job_description: str
 
-class IngestionBase(BaseModel):
-    user_id: str
-    type: str  # 'resume' or 'jd'
-    content: str
-    filename: Optional[str] = None
-    timestamp: datetime = Field(default_factory=datetime.utcnow)
-
-class IngestionCreate(IngestionBase):
-    pass
+class DocumentResponse(BaseModel):
+    id: str
+    user_email: str
+    resume_text: str
+    job_description: str
+    
+    # NLP Fields (Milestone 2)
+    processed_resume: Optional[str] = None
+    processed_jd: Optional[str] = None
+    resume_skills: list[str] = []
+    jd_skills: list[str] = []
+    
+    created_at: datetime
