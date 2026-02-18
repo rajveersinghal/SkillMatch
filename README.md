@@ -5,7 +5,8 @@ SkillMatch is an intelligent, AI-powered internal tool designed to match resumes
 ## 🚀 Key Features
 
 *   **Intelligent Matching:** Uses TF-IDF vectorization and cosine similarity to match resumes against job descriptions.
-*   **Skill Extraction:** Automatically identifies key technical and soft skills from documents.
+*   **Skill Extraction:** Automatically identifies key technical and soft skills from documents using a customizable skills dictionary.
+*   **Exact Skill Matching:** Implements regex-based pattern matching with word boundaries to ensure high accuracy and prevent false positives (e.g., distinguishing "Git" from "digital").
 *   **Detailed Analysis:** Provides a breakdown of matching skills, missing skills, and an overall compatibility score.
 *   **User Management:** Secure authentication system for recruiters to manage their sessions.
 *   **History Tracking:** Saves all analysis results for future reference.
@@ -16,7 +17,7 @@ SkillMatch is an intelligent, AI-powered internal tool designed to match resumes
 *   **Frontend:** Streamlit, Custom CSS
 *   **Backend:** FastAPI, Python 3.10+
 *   **Database:** MongoDB Atlas
-*   **NLP:** scikit-learn (TF-IDF), NLTK, spaCy
+*   **NLP:** scikit-learn (TF-IDF), NLTK, spaCy, Regex
 *   **Authentication:** JWT (JSON Web Tokens)
 *   **Deployment:** Docker ready (optional)
 
@@ -28,17 +29,26 @@ SkillMatch/
 │   ├── routers/        # API routes (auth, documents)
 │   └── main.py         # Entry point for the backend
 ├── core/               # Core business logic
-│   └── ingestion.py    # Text extraction logic
+│   ├── ingestion.py    # Text extraction logic (PDF/DOCX)
+│   └── database.py     # Database interactions
 ├── frontend/           # Streamlit frontend application
-│   ├── app.py          # Main Streamlit app
-│   └── style.css       # Custom styling
+│   ├── app.py          # Main Streamlit app interface
+│   └── style.css       # Custom styling for a premium look
 ├── nlp/                # NLP processing modules
 │   ├── preprocessing.py # Text cleaning and normalization
-│   └── skill_extractor.py # Skill extraction logic
-├── data/               # Data storage (if local)
+│   └── skill_extractor.py # Skill extraction logic using regex
+├── data/               # Data configuration
+│   └── skills_list.txt # List of skills used for extraction
 ├── requirements.txt    # Project dependencies
 └── README.md           # Project documentation
 ```
+
+## 📊 Data Configuration
+
+The `data/` folder contains the `skills_list.txt` file, which serves as the knowledge base for skill extraction.
+
+*   **skills_list.txt**: This text file lists all the technical and soft skills the system should look for.
+*   **Customization**: You can add or remove skills from this file to tailor the matcher to specific roles or industries. The system loads this list dynamically.
 
 ## ⚙️ Setup & Installation
 
@@ -46,8 +56,8 @@ Follow these steps to set up the project locally.
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/yourusername/skillmatch.git
-cd skillmatch
+git clone https://github.com/rajveersinghal/SkillMatch.git
+cd SkillMatch
 ```
 
 ### 2. Set Up Virtual Environment
