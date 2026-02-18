@@ -1,0 +1,86 @@
+# =========================
+# DATA ANALYST ROLE
+# =========================
+SQL
+Data Analysis
+Excel
+Power BI
+Statistics
+Pandas
+NumPy
+
+# =========================
+# DATA SCIENTIST ROLE
+# =========================
+Python
+SQL
+Machine Learning
+Deep Learning
+Statistics
+Data Analysis
+Pandas
+NumPy
+Scikit-learn
+TensorFlow
+PyTorch
+NLP
+
+# =========================
+# MACHINE LEARNING ENGINEER ROLE
+# =========================
+Python
+Machine Learning
+Deep Learning
+Scikit-learn
+TensorFlow
+PyTorch
+Statistics
+NLP
+
+# =========================
+# AI / NLP ENGINEER ROLE
+# =========================
+Python
+Natural Language Processing (NLP)
+Machine Learning
+Deep Learning
+TensorFlow
+PyTorch
+Scikit-learn
+
+# =========================
+# BUSINESS INTELLIGENCE (BI) ANALYST ROLE
+# =========================
+SQL
+Power BI
+Excel
+Statistics
+Data Analysis
+
+# =========================
+# PYTHON DEVELOPER ROLE
+# =========================
+Python
+Flask
+Streamlit
+MongoDB
+Git
+
+# =========================
+# DATA ENGINEER (BASIC LEVEL) ROLE
+# =========================
+Python
+SQL
+MongoDB
+Pandas
+Git
+
+# =========================
+# FULL STACK / TOOL-BASED DATA APP DEVELOPER
+# =========================
+Python
+Flask
+Streamlit
+MongoDB
+SQL
+Git
