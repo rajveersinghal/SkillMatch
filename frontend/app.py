@@ -244,8 +244,8 @@ else:
                                 st.caption("No skills stored.")
                         
                         st.divider()
-                        st.text_area("Full Resume Text", doc.get('resume_text', ''), height=100, disabled=True)
-                        st.text_area("Full JD Text", doc.get('job_description', ''), height=100, disabled=True)
+                        st.text_area("Full Resume Text", doc.get('resume_text', ''), height=100, disabled=True, key=f"resume_text_{i}")
+                        st.text_area("Full JD Text", doc.get('job_description', ''), height=100, disabled=True, key=f"jd_text_{i}")
                         
         else:
             st.info("No submissions found in your history.")

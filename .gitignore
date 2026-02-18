@@ -47,5 +47,6 @@ Desktop.ini
 # Project Specific
 data/
 !data/.gitkeep
+!data/skills_list.txt
 resume_matcher/
 !resume_matcher/.gitkeep

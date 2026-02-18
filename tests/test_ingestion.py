@@ -5,7 +5,7 @@ import docx
 
 # Import modules to test
 # Import modules to test
-from core.ingestion import extract_text_from_docx, extract_resume_text
+from core.ingestion import extract_text_from_docx
 import core.database as database
 
 
