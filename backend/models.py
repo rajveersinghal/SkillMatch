@@ -29,5 +29,8 @@ class DocumentResponse(BaseModel):
     processed_jd: Optional[str] = None
     resume_skills: list[str] = []
     jd_skills: list[str] = []
+    match_score: Optional[float] = None
+    missing_skills: list[str] = []
+    grouped_missing: Optional[dict[str, list[str]]] = None
     
     created_at: datetime

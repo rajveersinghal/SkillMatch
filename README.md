@@ -11,6 +11,7 @@ SkillMatch is an intelligent, AI-powered internal tool designed to match resumes
 *   **User Management:** Secure authentication system for recruiters to manage their sessions.
 *   **History Tracking:** Saves all analysis results for future reference.
 *   **Modern UI:** Built with Streamlit for a responsive and interactive user experience.
+*   **Skill Gap Analysis:** Categorizes missing skills using a structured taxonomy for better career guidance.
 
 ## 🛠️ Tech Stack
 
@@ -106,3 +107,10 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## 📄 License
 This project is licensed under the MIT License.
+
+## 🏁 Milestone 3 – Resume Matching & Skill Gap Analysis
+- Resume–JD matching using TF-IDF and cosine similarity
+- Match score displayed as percentage
+- Skill gap identification using set difference
+- Skill taxonomy for grouped explanations
+- User-friendly results dashboard

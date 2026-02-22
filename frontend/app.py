@@ -13,6 +13,9 @@ except ImportError:
 from core.ingestion import extract_text
 from nlp.preprocessing import preprocess_text
 from nlp.skill_extractor import extract_skills
+from nlp.vectorizer import generate_tfidf_vectors
+from nlp.matcher import calculate_match_score, identify_skill_gap, group_skills_by_category
+from data.skill_taxonomy import skill_taxonomy
 
 
 
@@ -145,6 +148,12 @@ else:
                 job_description = jd_text_manual
             
             if resume_text and job_description:
+                pass
+            else:
+                st.error("Resume and Job Description are required.")
+                st.stop()
+
+            if resume_text and job_description:
                 with st.spinner("🔍 Analyzing documents and extracting skills..."):
                     # 2. Processing
                     processed_resume = preprocess_text(resume_text)
@@ -161,46 +170,81 @@ else:
                 else:
                     st.warning("⚠️ Analysis complete, but failed to save to history.")
 
+                # Milestone 3 - Phase 2: Edge Case Handling
+                if not jd_skills:
+                    st.warning("⚠️ No skills detected in Job Description. Matching might be inaccurate.")
+                elif not resume_skills:
+                    st.warning("⚠️ No skills detected in Resume. Please ensure your resume contains relevant technical skills.")
+
                 # 4. Results Display
-                st.divider()
-                st.header("📊 Analysis Results")
+                st.markdown("---")
+                st.header("📊 SkillMatch Results")
 
                 # Metrics Row
                 m_col1, m_col2, m_col3 = st.columns(3)
                 
                 # Calculations
-                missing_skills = sorted(list(set(jd_skills) - set(resume_skills)))
                 matching_skills = sorted(list(set(jd_skills) & set(resume_skills)))
-                match_percentage = 0
-                if jd_skills:
-                    match_percentage = int((len(matching_skills) / len(jd_skills)) * 100)
+                
+                # Milestone 3 - Phase 1: Similarity Calculation (Cosine Similarity on TF-IDF)
+                vectors, _ = generate_tfidf_vectors(processed_resume, processed_jd)
+                
+                # Milestone 3 - Phase 5: Edge-Case Safety
+                if vectors.shape[1] == 0:
+                    st.warning("Not enough information to calculate match.")
+                    st.stop()
+                    
+                match_score = calculate_match_score(vectors)
+                
+                # Milestone 3 - Phase 2 & 3: Skill Gap & Taxonomy
+                missing_skills = identify_skill_gap(resume_skills, jd_skills)
+                grouped_missing = group_skills_by_category(missing_skills, skill_taxonomy)
                 
                 with m_col1:
-                    st.metric("Match Score", f"{match_percentage}%")
-                    st.progress(match_percentage / 100)
+                    st.subheader("Match Score")
+                    st.metric(label="Match Percentage", value=f"{match_score}%")
+                    st.progress(match_score / 100)
+                    
+                    # Milestone 3 - Phase 4: UI Polish (Conditional Feedback)
+                    if match_score >= 75:
+                        st.success("Strong match for this role 💪")
+                    elif match_score >= 50:
+                        st.info("Moderate match — some upskilling recommended")
+                    else:
+                        st.warning("Low match — significant skill gap detected")
+
                 with m_col2:
                     st.metric("Matching Skills", len(matching_skills))
                 with m_col3:
                     st.metric("Missing Skills", len(missing_skills))
 
+                st.divider()
+
                 # Skills Visuals
                 c1, c2 = st.columns(2)
                 with c1:
-                    st.subheader("✅ Matching Skills")
-                    if matching_skills:
-                        display_skill_tags(matching_skills, "match")
+                    st.subheader("✅ Skills Found in Resume")
+                    if resume_skills:
+                        display_skill_tags(resume_skills, "neutral")
                     else:
-                        st.info("No matching skills found.")
+                        st.warning("No skills detected in resume.")
                         
                 with c2:
-                    st.subheader("❌ Missing Skills")
+                    st.subheader("❌ Missing Skills (Compared to JD)")
                     if missing_skills:
                         display_skill_tags(missing_skills, "missing")
                     else:
-                        st.success("No missing skills! You're a great fit.")
+                        st.success("No missing skills detected 🎉")
 
-                st.subheader("📋 Detected Resume Skills")
-                display_skill_tags(resume_skills, "neutral")
+                st.divider()
+
+                # Explainability Section
+                st.subheader("📂 Skill Gap Analysis (Grouped by Category)")
+                if not grouped_missing:
+                    st.success("Your skills align well with the job requirements 🎯")
+                else:
+                    for category, skills in grouped_missing.items():
+                        st.write(f"**{category}:** {', '.join(skills)}")
 
                 # Debug / Detailed View - REMOVED as per user request
 

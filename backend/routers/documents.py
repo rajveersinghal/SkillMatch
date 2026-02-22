@@ -4,6 +4,9 @@ from backend.database import get_document_collection
 
 from nlp.preprocessing import preprocess_text
 from nlp.skill_extractor import extract_skills
+from nlp.vectorizer import generate_tfidf_vectors
+from nlp.matcher import calculate_match_score, identify_skill_gap, group_skills_by_category
+from data.skill_taxonomy import skill_taxonomy
 from datetime import datetime
 from typing import List
 from pydantic import BaseModel
@@ -44,6 +47,14 @@ def upload_document(doc: DocumentCreate, current_user: str = Depends(get_current
     resume_skills = extract_skills(processed_resume)
     jd_skills = extract_skills(processed_jd)
 
+    # Milestone 3 - Phase 1: Similarity Calculation
+    vectors, _ = generate_tfidf_vectors(processed_resume, processed_jd)
+    match_score = calculate_match_score(vectors)
+
+    # Milestone 3 - Phase 2 & 3: Skill Gap & Taxonomy
+    missing_skills = identify_skill_gap(resume_skills, jd_skills)
+    grouped_missing = group_skills_by_category(missing_skills, skill_taxonomy)
+
     docs_col.insert_one({
         "user_email": current_user,
         "resume_text": doc.resume_text,
@@ -54,6 +65,9 @@ def upload_document(doc: DocumentCreate, current_user: str = Depends(get_current
         "processed_jd": processed_jd,
         "resume_skills": resume_skills,
         "jd_skills": jd_skills,
+        "match_score": match_score,
+        "missing_skills": missing_skills,
+        "grouped_missing": grouped_missing,
         
         "created_at": datetime.utcnow()
     })
