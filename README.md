@@ -108,9 +108,4 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 ## 📄 License
 This project is licensed under the MIT License.
 
-## 🏁 Milestone 3 – Resume Matching & Skill Gap Analysis
-- Resume–JD matching using TF-IDF and cosine similarity
-- Match score displayed as percentage
-- Skill gap identification using set difference
-- Skill taxonomy for grouped explanations
-- User-friendly results dashboard
+
