@@ -1,111 +1,146 @@
-# 🧩 SkillMatch - AI Resume Matcher
+# 🧩 SkillMatch - AI-Powered Resume Matcher
 
-SkillMatch is an intelligent, AI-powered internal tool designed to match resumes with job descriptions accurately. It leverages Natural Language Processing (NLP) techniques to analyze text, extract skills, and calculate compatibility scores, helping recruiters and hiring managers streamline the screening process.
+SkillMatch is a premium, intelligent internal tool designed to revolutionize the recruitment process. By leveraging advanced Natural Language Processing (NLP) and a modern high-performance micro-stack, SkillMatch accurately aligns candidate resumes with job descriptions, revealing hidden gems and surface-level misalignments with surgical precision.
+
+---
+
+## 🏗️ System Architecture
+
+SkillMatch follows a decoupled, modern architecture designed for speed and scalability.
+
+```mermaid
+graph TD
+    subgraph "Frontend Layer (React)"
+        U[User] --> FE[Vite + React SPA]
+        FE --> FM[Framer Motion Animations]
+        FE --> TW[Tailwind UI]
+    end
+
+    subgraph "Logic Layer (FastAPI)"
+        FE -- REST API --> BE[FastAPI Backend]
+        BE --> AR[Auth Router]
+        BE --> DR[Document Router]
+    end
+
+    subgraph "Neural Engine (NLP)"
+        DR --> IE[Inference Engine]
+        IE --> SE[Skill Extractor]
+        IE --> MG[Matching Engine]
+        IE --> SGE[Suggestion Engine]
+    end
+
+    subgraph "Data Layer (MongoDB)"
+        BE --> DB[(MongoDB)]
+        DB --> US[User Settings]
+        DB --> DH[Document History]
+    end
+```
+
+---
+
+## 🌊 Core Flow & NLP Pipeline
+
+The "Neural Pulse" of SkillMatch lies in its multi-stage NLP pipeline:
+
+1.  **Ingestion & Preprocessing**: Raw text is extracted from PDFs/DOCX and normalized (case folding, stop-word removal, lemmatization).
+2.  **Entity Recognition**: The `Skill Extractor` uses high-precision Regex patterns with word-boundary awareness to identify technical and soft skills.
+3.  **Vectorization**: Documents are transformed into Sparse Vectors (TF-IDF) to capture the relative importance of terms.
+4.  **Similarity Scoring**: `Cosine Similarity` is calculated between the Resume and JD vectors to produce a match percentage.
+5.  **Gap Analysis**: Missing skills are identified by comparing extracted sets and categorized via a curated **Skill Taxonomy**.
+6.  **Intelligent Suggestions**:
+    *   **Co-occurrence**: Suggests tools often used together (e.g., Python → Pandas).
+    *   **Semantic Proximity**: Uses `Sentence-Transformers` (MiniLM) to find related skills in high-dimensional vector space.
+
+---
 
 ## 🚀 Key Features
 
-*   **Intelligent Matching:** Uses TF-IDF vectorization and cosine similarity to match resumes against job descriptions.
-*   **Skill Extraction:** Automatically identifies key technical and soft skills from documents using a customizable skills dictionary.
-*   **Exact Skill Matching:** Implements regex-based pattern matching with word boundaries to ensure high accuracy and prevent false positives (e.g., distinguishing "Git" from "digital").
-*   **Detailed Analysis:** Provides a breakdown of matching skills, missing skills, and an overall compatibility score.
-*   **User Management:** Secure authentication system for recruiters to manage their sessions.
-*   **History Tracking:** Saves all analysis results for future reference.
-*   **Modern UI:** Built with Streamlit for a responsive and interactive user experience.
-*   **Skill Gap Analysis:** Categorizes missing skills using a structured taxonomy for better career guidance.
+*   **Neural Analysis**: High-precision matching using TF-IDF and Cosine Similarity.
+*   **Skill Gap Intelligence**: Visualize exactly what's missing between a candidate's profile and the job requirements.
+*   **Smart Suggestions**: AI-driven recommendations for upskilling or related technologies.
+*   **Journey History**: Full persistence of previous analyses for recruiters to track candidate evolution.
+*   **Admin Console**: Real-time usage statistics and dynamic skill taxonomy management.
+*   **Zen UX**: A premium, responsive interface featuring glassmorphism and smooth micro-animations.
+
+---
 
 ## 🛠️ Tech Stack
 
-*   **Frontend:** Streamlit, Custom CSS
-*   **Backend:** FastAPI, Python 3.10+
-*   **Database:** MongoDB Atlas
-*   **NLP:** scikit-learn (TF-IDF), NLTK, spaCy, Regex
-*   **Authentication:** JWT (JSON Web Tokens)
-*   **Deployment:** Docker ready (optional)
+*   **Frontend**: React 19, Vite, Tailwind CSS 4, Framer Motion, Lucide Icons.
+*   **Backend**: FastAPI, Uvicorn, Jose (JWT).
+*   **Database**: MongoDB.
+*   **NLP Engine**: Scikit-Learn (TF-IDF), SpaCy (Entities), Sentence-Transformers (Embeddings), NLTK.
+
+---
 
 ## 📂 Project Structure
 
-```
+```bash
 SkillMatch/
-├── backend/            # FastAPI backend application
-│   ├── routers/        # API routes (auth, documents)
-│   └── main.py         # Entry point for the backend
-├── core/               # Core business logic
-│   ├── ingestion.py    # Text extraction logic (PDF/DOCX)
-│   └── database.py     # Database interactions
-├── frontend/           # Streamlit frontend application
-│   ├── app.py          # Main Streamlit app interface
-│   └── style.css       # Custom styling for a premium look
-├── nlp/                # NLP processing modules
-│   ├── preprocessing.py # Text cleaning and normalization
-│   └── skill_extractor.py # Skill extraction logic using regex
-├── data/               # Data configuration
-│   └── skills_list.txt # List of skills used for extraction
-├── requirements.txt    # Project dependencies
-└── README.md           # Project documentation
+├── backend/            # FastAPI Application
+│   ├── routers/        # API Endpoints (Auth, Documents)
+│   ├── main.py         # Backend Entry Point
+│   ├── models.py       # Pydantic Schemas
+│   └── database.py     # MongoDB Connection & Config
+├── frontend-react/     # Vite + React Application
+│   ├── src/
+│   │   ├── components/ # Atomic UI Elements
+│   │   ├── pages/      # Dashboard, History, Admin, Landing
+│   │   └── context/    # Global State Management
+├── nlp/                # Core AI Inference Engine
+│   ├── matcher.py      # Similarity & Gap Analysis
+│   ├── skill_extractor.py # Regex Entity Recognition
+│   └── suggestion_engine.py # Co-occurrence & Embedding Logic
+├── data/               # Knowledge Base
+│   ├── skills_list.txt # Base Extraction Dictionary
+│   └── skill_taxonomy.py # Categorization Logic
+├── requirements.txt    # Python Dependencies
+└── .env                # Environment Configuration
 ```
 
-## 📊 Data Configuration
+---
 
-The `data/` folder contains the `skills_list.txt` file, which serves as the knowledge base for skill extraction.
+## ⚙️ Getting Started
 
-*   **skills_list.txt**: This text file lists all the technical and soft skills the system should look for.
-*   **Customization**: You can add or remove skills from this file to tailor the matcher to specific roles or industries. The system loads this list dynamically.
+### 1. Prerequisite Setup
+*   Clone the repository.
+*   Ensure **MongoDB** is running (local or Atlas).
+*   Configure the `.env` file:
+    ```env
+    MONGO_URI=mongodb://localhost:27017/
+    SECRET_KEY=yoursecretkey
+    ALGORITHM=HS256
+    ```
 
-## ⚙️ Setup & Installation
-
-Follow these steps to set up the project locally.
-
-### 1. Clone the Repository
+### 2. Backend Execution
 ```bash
-git clone https://github.com/rajveersinghal/SkillMatch.git
-cd SkillMatch
-```
-
-### 2. Set Up Virtual Environment
-```bash
-# Windows
+# Activate virtual environment
 python -m venv venv
 .\venv\Scripts\activate
 
-# Mac/Linux
-python3 -m venv venv
-source venv/bin/activate
-```
-
-### 3. Install Dependencies
-```bash
+# Install dependencies
 pip install -r requirements.txt
-python -m spacy download en_core_web_sm
-```
 
-### 4. Configure Environment Variables
-Create a `.env` file in the root directory and add your configuration:
-```env
-MONGO_URI=your_mongodb_connection_string
-SECRET_KEY=your_secret_key_for_jwt
-ALGORITHM=HS256
-ACCESS_TOKEN_EXPIRE_MINUTES=30
-```
-
-### 5. Run the Application
-
-**Start the Backend Server:**
-```bash
+# Start Server
 uvicorn backend.main:app --reload
 ```
-The API will be available at `http://localhost:8000`. API Docs at `http://localhost:8000/docs`.
+*API Docs available at: `http://localhost:8000/docs`*
 
-**Start the Frontend Interface:**
-Open a new terminal, activate the environment, and run:
+### 3. Frontend Execution
 ```bash
-streamlit run frontend/app.py
+cd frontend-react
+npm install
+npm run dev
 ```
-The application will open in your browser at `http://localhost:8501`.
+*App available at: `http://localhost:5173`*
 
-## 🤝 Contributing
-Contributions are welcome! Please feel free to submit a Pull Request.
+---
 
-## 📄 License
-This project is licensed under the MIT License.
+## 📈 Future Roadmap
+- [ ] **LLM Integration**: Deep qualitative analysis using OpenAI/Anthropic.
+- [ ] **Automated PDF Reports**: Export branded match reports for candidates.
+- [ ] **Team Collaboration**: Shared folders for recruitment teams.
 
 
+---
+© 2026 SkillMatch Team. Licensed under MIT.

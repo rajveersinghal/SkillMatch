@@ -16,3 +16,11 @@ def get_user_collection():
 
 def get_document_collection():
     return db["documents"]
+
+def check_db_connection():
+    try:
+        # The ismaster command is cheap and does not require auth.
+        client.admin.command('ismaster')
+        return True
+    except Exception:
+        return False
