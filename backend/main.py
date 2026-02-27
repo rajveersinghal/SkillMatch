@@ -6,7 +6,7 @@ from backend.routers import auth, documents
 import uvicorn
 import os
 
-app = FastAPI(title="SkillMatch API")
+app = FastAPI(title="SkillMatch API", root_path="/api")
 
 # CORS
 app.add_middleware(
