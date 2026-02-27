@@ -1,14 +1,13 @@
 fastapi
 uvicorn
 pymongo
+dnspython
 pydantic[email]
 python-jose[cryptography]
 passlib[bcrypt]
 spacy
 nltk
 scikit-learn
-sentence-transformers
-torch
 python-dotenv
 pandas
 numpy

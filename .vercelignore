@@ -1,0 +1,42 @@
+# Vercel Ignore File
+# Exclude large local directories from being bundled into the deployment
+
+# Virtual Environments
+venv/
+.venv/
+env/
+
+# Node Modules
+node_modules/
+frontend-react/node_modules/
+
+# Local Data and Logs
+data/
+!data/skills_list.txt
+logs/
+*.log
+
+# Build Artifacts
+dist/
+build/
+.next/
+.serverless/
+
+# Version Control
+.git/
+.gitignore
+
+# Environment Files
+.env
+.env.*
+
+# Python Cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Documentation and Tests
+tests/
+docs/
+README.md

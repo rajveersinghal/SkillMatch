@@ -1,20 +1,8 @@
 import os
-
-# Suppress HuggingFace and Transformers verbose logging before imports
-os.environ["TOKENIZERS_PARALLELISM"] = "false"
-os.environ["HF_HUB_DISABLE_SYMLINKS_WARNING"] = "1"
-
 import logging
-# Completely silence the 'unauthenticated requests' warning from huggingface_hub
-logging.getLogger("huggingface_hub").setLevel(logging.ERROR)
-logging.getLogger("sentence_transformers").setLevel(logging.ERROR)
-
-# Set transformers logging to error only to hide 'UNEXPECTED' weight reports
-from transformers import logging as transformers_logging
-transformers_logging.set_verbosity_error()
-
-from sentence_transformers import SentenceTransformer, util
-import torch
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
+import numpy as np
 from data.skill_taxonomy import skill_taxonomy
 
 # Co-occurrence map: If JD has Key, suggest Values if they are missing from Resume
@@ -28,27 +16,15 @@ CO_OCCURRENCE_MAP = {
 }
 
 class SuggestionEngine:
-    def __init__(self, model_name='all-MiniLM-L6-v2'):
-        # Only load model if needed for performance
-        self.model_name = model_name
-        self.model = None
-        
-        # Flatten taxonomy for embedding search
+    def __init__(self):
+        # Flatten taxonomy for search
         self.all_taxonomy_skills = []
         for cat_skills in skill_taxonomy.values():
             self.all_taxonomy_skills.extend(cat_skills)
         self.all_taxonomy_skills = list(set(self.all_taxonomy_skills))
-
-    def _load_model(self):
-        if self.model is None:
-            # Suppress loading progress bars
-            self.model = SentenceTransformer(self.model_name)
-            # Disable progress bar globally for this instance if needed, 
-            # though show_progress_bar is usually an argument in encode()
-            # The weight loading bar is harder to suppress without setting HF_HUB_OFFLINE=1
-            # but we can try setting the verbosity of the Hub.
-            import huggingface_hub
-            huggingface_hub.utils.logging.set_verbosity_error()
+        
+        # Initialize Vectorizer
+        self.vectorizer = TfidfVectorizer(ngram_range=(1, 2))
 
     def suggest_cooccurrence(self, jd_skills, resume_skills):
         """Method 1: Co-occurrence based suggestions"""
@@ -65,9 +41,7 @@ class SuggestionEngine:
         return list(set(suggestions))
 
     def suggest_embeddings(self, jd_skills, resume_skills, top_k=3):
-        """Method 2: Embedding based suggestions for semantically similar skills"""
-        self._load_model()
-        
+        """Method 2: Similarity based suggestions for semantically similar skills"""
         resume_skills_set = set(s.lower() for s in resume_skills)
         # Skills in taxonomy that the user DOES NOT have
         potential_skills = [s for s in self.all_taxonomy_skills if s not in resume_skills_set]
@@ -75,24 +49,33 @@ class SuggestionEngine:
         if not potential_skills or not jd_skills:
             return []
 
-        # Encode JD skills and potential skills without progress bars
-        jd_embeddings = self.model.encode(jd_skills, convert_to_tensor=True, show_progress_bar=False)
-        potential_embeddings = self.model.encode(potential_skills, convert_to_tensor=True, show_progress_bar=False)
-
-        # Calculate cosine similarity
-        cosine_scores = util.cos_sim(jd_embeddings, potential_embeddings)
-        
-        # For each JD skill, find top similar skills user doesn't have
-        suggestions = []
-        for i in range(len(jd_skills)):
-            # Get indices of top_k highest scores for this JD skill
-            top_results = torch.topk(cosine_scores[i], k=min(top_k, len(potential_skills)))
+        try:
+            # Pairwise similarity: Extract similarity between JD skills and Taxonomy skills
+            # We fit on the union of both to have a shared vocabulary
+            corpus = jd_skills + potential_skills
+            tfidf_matrix = self.vectorizer.fit_transform(corpus)
             
-            for score, idx in zip(top_results[0], top_results[1]):
-                if score > 0.6: # threshold for similarity
-                    suggestions.append(potential_skills[idx])
-        
-        return list(set(suggestions))
+            # Split matrix back into JD and Potential
+            jd_vectors = tfidf_matrix[:len(jd_skills)]
+            potential_vectors = tfidf_matrix[len(jd_skills):]
+
+            # Calculate cosine similarity
+            cosine_scores = cosine_similarity(jd_vectors, potential_vectors)
+            
+            suggestions = []
+            for i in range(len(jd_skills)):
+                # Get indices of top_k highest scores for this JD skill
+                # Using argsort as a lightweight alternative to torch.topk
+                top_indices = np.argsort(cosine_scores[i])[-top_k:][::-1]
+                
+                for idx in top_indices:
+                    if cosine_scores[i][idx] > 0.3: # Lower threshold for TF-IDF vs Embeddings
+                        suggestions.append(potential_skills[idx])
+            
+            return list(set(suggestions))
+        except Exception as e:
+            logging.error(f"Suggestion Engine Error: {str(e)}")
+            return []
 
     def get_all_suggestions(self, jd_skills, resume_skills):
         co_occ = self.suggest_cooccurrence(jd_skills, resume_skills)
