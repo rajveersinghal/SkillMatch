@@ -10,13 +10,8 @@ except LookupError:
     nltk.download("stopwords")
 
 # Load resources
-# Ensure 'en_core_web_sm' is downloaded before running this
-try:
-    nlp = spacy.load("en_core_web_sm")
-except OSError:
-    from spacy.cli import download
-    download("en_core_web_sm")
-    nlp = spacy.load("en_core_web_sm")
+# Model is pre-installed via requirements.txt
+nlp = spacy.load("en_core_web_sm")
 
 STOP_WORDS = set(stopwords.words("english"))
 
