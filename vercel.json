@@ -4,19 +4,23 @@
         {
             "src": "backend/main.py",
             "use": "@vercel/python"
-        }
-    ],
-    "routes": [
-        {
-            "src": "/api/(.*)",
-            "dest": "backend/main.py"
         },
         {
-            "src": "/$",
-            "status": 302,
-            "headers": {
-                "Location": "/api/"
+            "src": "frontend-react/package.json",
+            "use": "@vercel/static-build",
+            "config": {
+                "distDir": "dist"
             }
+        }
+    ],
+    "rewrites": [
+        {
+            "source": "/api/(.*)",
+            "destination": "backend/main.py"
+        },
+        {
+            "source": "/(.*)",
+            "destination": "frontend-react/$1"
         }
     ]
 }
