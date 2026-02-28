@@ -1,0 +1,19 @@
+fastapi
+uvicorn
+pymongo
+dnspython
+pydantic[email]
+python-jose[cryptography]
+passlib[bcrypt]
+spacy==3.7.5
+thinc==8.2.3
+# Pinning to ensure numpy 1.x compatibility across all layers
+https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.7.1/en_core_web_sm-3.7.1-py3-none-any.whl
+nltk
+scikit-learn==1.4.2
+python-dotenv
+pandas==2.2.2
+numpy==1.26.4
+PyPDF2
+python-docx
+# NOTE: spaCy model 'en_core_web_sm' is handled automatically during build
