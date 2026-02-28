@@ -19,23 +19,13 @@
             "destination": "backend/main.py"
         },
         {
-            "source": "/((?!api/).*)",
-            "destination": "/$1"
+            "source": "/(.*)",
+            "destination": "/$1",
+            "continue": true
         },
         {
-            "source": "/((?!api/).*)",
-            "destination": "/index.html"
-        }
-    ],
-    "headers": [
-        {
             "source": "/(.*)",
-            "headers": [
-                {
-                    "key": "Access-Control-Allow-Origin",
-                    "value": "*"
-                }
-            ]
+            "destination": "/index.html"
         }
     ]
 }
