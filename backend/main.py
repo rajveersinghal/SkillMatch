@@ -45,18 +45,21 @@ def read_root():
 
 @app.get("/health")
 def health_check():
-    from backend.database import check_db_connection, get_db
+    from backend.database import check_db_connection
+    import os
     is_online = check_db_connection()
     db_status = "Online" if is_online else "Offline"
     
-    # Check if MONGO_URI or MONGODB_URI is missing (safely)
-    mongo_config = "Set" if (os.getenv("MONGO_URI") or os.getenv("MONGODB_URI")) else "Missing"
+    # Check for any keys that contain "MONGO" (case-insensitive)
+    env_keys = list(os.environ.keys())
+    mongo_keys = [k for k in env_keys if "MONGO" in k.upper()]
     
     return {
         "status": "Healthy" if is_online else "Degraded",
         "database": db_status,
-        "mongo_config": mongo_config,
-        "api": "Online"
+        "mongo_env_keys": mongo_keys,
+        "api": "Online",
+        "env_count": len(env_keys)
     }
 
 
