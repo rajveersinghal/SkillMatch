@@ -5,13 +5,14 @@ dnspython
 pydantic[email]
 python-jose[cryptography]
 passlib[bcrypt]
-spacy>=3.7.0
+spacy==3.7.5
+thinc==8.2.3
 https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.7.1/en_core_web_sm-3.7.1-py3-none-any.whl
 nltk
-scikit-learn
+scikit-learn==1.4.2
 python-dotenv
 pandas
-numpy<2.0.0
+numpy==1.26.4
 PyPDF2
 python-docx
 # NOTE: spaCy model 'en_core_web_sm' is handled automatically during build
