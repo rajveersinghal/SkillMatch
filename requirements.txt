@@ -6,7 +6,7 @@ pydantic[email]
 python-jose[cryptography]
 passlib[bcrypt]
 spacy==3.7.5
-en_core_web_sm
+https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.7.1/en_core_web_sm-3.7.1-py3-none-any.whl
 nltk
 scikit-learn
 python-dotenv
@@ -14,4 +14,3 @@ pandas==2.2.2
 numpy==1.26.4
 PyPDF2
 python-docx
-# NOTE: spaCy model 'en_core_web_sm' is handled automatically during build
