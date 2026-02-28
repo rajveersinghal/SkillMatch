@@ -7,7 +7,6 @@ import os
 from jose import jwt
 
 router = APIRouter()
-users_col = get_user_collection()
 
 SECRET_KEY = os.getenv("SECRET_KEY", "secret")
 ALGORITHM = os.getenv("ALGORITHM", "HS256")
@@ -22,6 +21,10 @@ def create_access_token(data: dict):
 
 @router.post("/register", status_code=status.HTTP_201_CREATED)
 def register(user: UserRegister):
+    users_col = get_user_collection()
+    if users_col is None:
+        raise HTTPException(status_code=503, detail="Database connection failed. Please check MONGO_URI.")
+        
     if users_col.find_one({"email": user.email}):
         raise HTTPException(status_code=400, detail="Email already registered")
     
@@ -35,6 +38,10 @@ def register(user: UserRegister):
 
 @router.post("/login", response_model=Token)
 def login(user: UserLogin):
+    users_col = get_user_collection()
+    if users_col is None:
+        raise HTTPException(status_code=503, detail="Database connection failed. Please check MONGO_URI.")
+        
     db_user = users_col.find_one({"email": user.email})
     if not db_user or not verify_password(user.password, db_user["password"]):
         raise HTTPException(status_code=401, detail="Invalid credentials")

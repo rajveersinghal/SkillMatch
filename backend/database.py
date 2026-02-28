@@ -29,13 +29,15 @@ def get_db():
 def get_user_collection():
     db = get_db()
     if db is None:
-        raise ValueError("Database not initialized. Check MONGO_URI.")
+        # Instead of raising, we return None and handle it in the router
+        return None
     return db["users"]
 
 def get_document_collection():
     db = get_db()
     if db is None:
-        raise ValueError("Database not initialized. Check MONGO_URI.")
+        # Instead of raising, we return None and handle it in the router
+        return None
     return db["documents"]
 
 def check_db_connection():

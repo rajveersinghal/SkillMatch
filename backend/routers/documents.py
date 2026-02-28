@@ -15,7 +15,6 @@ from typing import List
 from pydantic import BaseModel
 
 router = APIRouter()
-docs_col = get_document_collection()
 suggestion_engine = SuggestionEngine()
 
 
@@ -45,6 +44,10 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
 
 @router.post("/", response_model=dict)
 def upload_document(doc: DocumentCreate, current_user: str = Depends(get_current_user)):
+    docs_col = get_document_collection()
+    if docs_col is None:
+        raise HTTPException(status_code=503, detail="Database connection failed. Please check MONGO_URI.")
+        
     try:
         # Run NLP Pipeline (Milestone 2)
         processed_resume = preprocess_text(doc.resume_text)
@@ -100,6 +103,10 @@ def upload_document(doc: DocumentCreate, current_user: str = Depends(get_current
 
 @router.get("/history", response_model=List[dict])
 def get_history(current_user: str = Depends(get_current_user)):
+    docs_col = get_document_collection()
+    if docs_col is None:
+        raise HTTPException(status_code=503, detail="Database connection failed.")
+        
     docs = list(docs_col.find({"user_email": current_user}))
     for doc in docs:
         doc["_id"] = str(doc["_id"])
@@ -108,6 +115,10 @@ def get_history(current_user: str = Depends(get_current_user)):
 @router.delete("/{doc_id}")
 def delete_document(doc_id: str, current_user: str = Depends(get_current_user)):
     from bson import ObjectId
+    docs_col = get_document_collection()
+    if docs_col is None:
+        raise HTTPException(status_code=503, detail="Database connection failed.")
+        
     result = docs_col.delete_one({"_id": ObjectId(doc_id), "user_email": current_user})
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Document not found")
@@ -116,7 +127,11 @@ def delete_document(doc_id: str, current_user: str = Depends(get_current_user)):
 @router.get("/stats")
 def get_stats():
     from backend.database import get_user_collection
+    docs_col = get_document_collection()
     users_col = get_user_collection()
+    if docs_col is None or users_col is None:
+         return {"total_users": 0, "total_documents": 0, "status": "Database Offline"}
+         
     return {
         "total_users": users_col.count_documents({}),
         "total_documents": docs_col.count_documents({})

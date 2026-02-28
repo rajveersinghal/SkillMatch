@@ -23,5 +23,9 @@ def update_stats(found_skills):
         skill_counts[skill] = skill_counts.get(skill, 0) + 1
     stats["skill_counts"] = skill_counts
     
-    with open(STATS_FILE, "w") as f:
-        json.dump(stats, f, indent=4)
+    try:
+        with open(STATS_FILE, "w") as f:
+            json.dump(stats, f, indent=4)
+    except (IOError, OSError) as e:
+        # On Vercel, the filesystem is read-only. We log and continue.
+        print(f"Warning: Could not save usage stats (Read-only filesystem): {e}")

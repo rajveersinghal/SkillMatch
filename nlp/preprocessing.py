@@ -1,17 +1,32 @@
 import re
+import os
 import spacy
 import nltk
 from nltk.corpus import stopwords
+
+# Configure NLTK to use /tmp if on Vercel
+if os.getenv("VERCEL"):
+    nltk.data.path.append("/tmp/nltk_data")
 
 # Download once (safe to run multiple times, checks existence)
 try:
     nltk.data.find('corpora/stopwords')
 except LookupError:
-    nltk.download("stopwords")
+    try:
+        nltk.download("stopwords", download_dir="/tmp/nltk_data" if os.getenv("VERCEL") else None)
+    except Exception as e:
+        print(f"NLTK Download Warning: {e}")
 
 # Load resources
 # Model is pre-installed via requirements.txt
-nlp = spacy.load("en_core_web_sm")
+try:
+    nlp = spacy.load("en_core_web_sm")
+except Exception as e:
+    print(f"Error: SpaCy model 'en_core_web_sm' not found. Ensure it is in requirements.txt. Detail: {e}")
+    # Fallback to a dummy object to prevent total crash on startup
+    class DummyNLP:
+        def __call__(self, text): return []
+    nlp = DummyNLP()
 
 STOP_WORDS = set(stopwords.words("english"))
 
