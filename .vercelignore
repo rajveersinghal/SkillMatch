@@ -11,8 +11,8 @@ node_modules/
 frontend-react/node_modules/
 
 # Local Data and Logs
-data/
-!data/skills_list.txt
+data/*.json
+data/__pycache__/
 logs/
 *.log
 
