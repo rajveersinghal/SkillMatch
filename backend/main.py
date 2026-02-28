@@ -55,6 +55,7 @@ def health_check():
     mongo_keys = [k for k in env_keys if "MONGO" in k.upper()]
     
     return {
+        "v": 2.2,
         "status": "Healthy" if is_online else "Degraded",
         "database": db_status,
         "mongo_env_keys": mongo_keys,
