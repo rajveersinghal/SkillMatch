@@ -1,0 +1,16 @@
+{
+    "total_analyses": 13,
+    "last_analysis": "2026-02-27T22:01:30.182701",
+    "skill_counts": {
+        "flask": 12,
+        "git": 26,
+        "machine learning": 12,
+        "nlp": 12,
+        "numpy": 26,
+        "python": 26,
+        "sql": 12,
+        "streamlit": 12,
+        "pytorch": 14,
+        "tensorflow": 14
+    }
+}

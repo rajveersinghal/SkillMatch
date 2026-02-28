@@ -7,7 +7,7 @@ from nlp.skill_extractor import extract_skills
 from nlp.vectorizer import generate_tfidf_vectors
 from nlp.matcher import calculate_match_score, identify_skill_gap, group_skills_by_category
 from nlp.suggestion_engine import SuggestionEngine
-from data.skill_taxonomy import skill_taxonomy
+from app_data.skill_taxonomy import skill_taxonomy
 from core.usage_stats import update_stats
 
 from datetime import datetime

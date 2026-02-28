@@ -3,7 +3,7 @@ import logging
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
-from data.skill_taxonomy import skill_taxonomy
+from app_data.skill_taxonomy import skill_taxonomy
 
 # Co-occurrence map: If JD has Key, suggest Values if they are missing from Resume
 CO_OCCURRENCE_MAP = {

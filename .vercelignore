@@ -11,8 +11,8 @@ node_modules/
 frontend-react/node_modules/
 
 # Local Data and Logs
-data/*.json
-data/__pycache__/
+app_data/*.json
+app_data/__pycache__/
 logs/
 *.log
 

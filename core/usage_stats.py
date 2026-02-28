@@ -5,7 +5,7 @@ from datetime import datetime
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-STATS_FILE = BASE_DIR / "data" / "usage_stats.json"
+STATS_FILE = BASE_DIR / "app_data" / "usage_stats.json"
 
 def get_stats():
     if not os.path.exists(STATS_FILE):
