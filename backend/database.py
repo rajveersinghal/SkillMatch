@@ -42,11 +42,18 @@ def get_document_collection():
 
 def check_db_connection():
     try:
+        mongo_uri = os.getenv("MONGO_URI")
+        if not mongo_uri:
+            print("Database Error: MONGO_URI is not set in environment variables.")
+            return False
+            
         client = get_client()
         if not client:
             return False
+            
         # The ismaster command is cheap and does not require auth.
         client.admin.command('ismaster')
         return True
-    except Exception:
+    except Exception as e:
+        print(f"Database Connection Exception: {str(e)}")
         return False

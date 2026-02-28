@@ -45,11 +45,17 @@ def read_root():
 
 @app.get("/health")
 def health_check():
-    from backend.database import check_db_connection
-    db_status = "Online" if check_db_connection() else "Offline"
+    from backend.database import check_db_connection, get_db
+    is_online = check_db_connection()
+    db_status = "Online" if is_online else "Offline"
+    
+    # Check if MONGO_URI is missing (safely)
+    mongo_config = "Set" if os.getenv("MONGO_URI") else "Missing"
+    
     return {
-        "status": "Healthy" if db_status == "Online" else "Degraded",
+        "status": "Healthy" if is_online else "Degraded",
         "database": db_status,
+        "mongo_config": mongo_config,
         "api": "Online"
     }
 
