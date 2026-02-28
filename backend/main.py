@@ -49,8 +49,8 @@ def health_check():
     is_online = check_db_connection()
     db_status = "Online" if is_online else "Offline"
     
-    # Check if MONGO_URI is missing (safely)
-    mongo_config = "Set" if os.getenv("MONGO_URI") else "Missing"
+    # Check if MONGO_URI or MONGODB_URI is missing (safely)
+    mongo_config = "Set" if (os.getenv("MONGO_URI") or os.getenv("MONGODB_URI")) else "Missing"
     
     return {
         "status": "Healthy" if is_online else "Degraded",

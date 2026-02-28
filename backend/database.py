@@ -11,7 +11,7 @@ _db = None
 def get_client():
     global _client
     if _client is None:
-        mongo_uri = os.getenv("MONGO_URI")
+        mongo_uri = os.getenv("MONGO_URI") or os.getenv("MONGODB_URI")
         if not mongo_uri:
             # We don't raise here to allow non-DB routes to work
             return None
@@ -42,9 +42,9 @@ def get_document_collection():
 
 def check_db_connection():
     try:
-        mongo_uri = os.getenv("MONGO_URI")
+        mongo_uri = os.getenv("MONGO_URI") or os.getenv("MONGODB_URI")
         if not mongo_uri:
-            print("Database Error: MONGO_URI is not set in environment variables.")
+            print("Database Error: Neither MONGO_URI nor MONGODB_URI is set.")
             return False
             
         client = get_client()
