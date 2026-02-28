@@ -28,7 +28,16 @@ except Exception as e:
         def __call__(self, text): return []
     nlp = DummyNLP()
 
-STOP_WORDS = set(stopwords.words("english"))
+_STOP_WORDS = None
+
+def get_stop_words():
+    global _STOP_WORDS
+    if _STOP_WORDS is None:
+        try:
+            _STOP_WORDS = set(stopwords.words("english"))
+        except Exception:
+            _STOP_WORDS = set() # Fallback to empty set
+    return _STOP_WORDS
 
 def preprocess_text(text: str) -> str:
     """
@@ -49,11 +58,12 @@ def preprocess_text(text: str) -> str:
     # 3. Tokenization + Lemmatization
     doc = nlp(text)
 
+    stop_words = get_stop_words()
     tokens = []
     for token in doc:
         # Filter: not a stopword, length > 2, not whitespace
         if (
-            token.text not in STOP_WORDS
+            token.text not in stop_words
             and len(token.text) > 2
             and not token.is_space
         ):
