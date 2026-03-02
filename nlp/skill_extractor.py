@@ -4,7 +4,7 @@ from pathlib import Path
 # Use absolute path relative to this file to locate skills_list.txt
 # This ensures it works regardless of where the script is called from
 BASE_DIR = Path(__file__).resolve().parent.parent
-SKILL_FILE = BASE_DIR / "data" / "skills_list.txt"
+SKILL_FILE = BASE_DIR / "app_data" / "skills_list.txt"
 
 def load_skills():
     """Lods skills from the skills_list.txt file."""

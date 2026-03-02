@@ -1,5 +1,6 @@
 from pymongo import MongoClient
 import os
+import certifi
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -15,7 +16,24 @@ def get_client():
         if not mongo_uri:
             # We don't raise here to allow non-DB routes to work
             return None
-        _client = MongoClient(mongo_uri)
+        try:
+            _client = MongoClient(mongo_uri, tlsCAFile=certifi.where())
+            # Test connection immediately
+            _client.admin.command('ismaster')
+        except Exception as e:
+            error_msg = str(e)
+            print(f"DATABASE INITIALIZATION ERROR: {error_msg}")
+            
+            if "SSL handshake failed" in error_msg or "TLSV1_ALERT_INTERNAL_ERROR" in error_msg:
+                print("\n" + "!"*60)
+                print("CRITICAL: MongoDB SSL Handshake Failed.")
+                print("Your IP address is likely not whitelisted in MongoDB Atlas.")
+                print("FIX: Go to MongoDB Atlas -> Network Access -> Add IP Address.")
+                print("!"*60 + "\n")
+            
+            # Reset client so we try again next time
+            _client = None
+            return None
     return _client
 
 def get_db():
@@ -55,5 +73,5 @@ def check_db_connection():
         client.admin.command('ismaster')
         return True
     except Exception as e:
-        print(f"Database Connection Exception: {str(e)}")
+        # Diagnostic print already handled in get_client, but keep here for redundancy in health check
         return False

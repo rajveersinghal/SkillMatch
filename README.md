@@ -91,7 +91,7 @@ SkillMatch/
 │   ├── matcher.py      # Similarity & Gap Analysis
 │   ├── skill_extractor.py # Regex Entity Recognition
 │   └── suggestion_engine.py # Co-occurrence & Embedding Logic
-├── data/               # Knowledge Base
+├── app_data/           # Knowledge Base
 │   ├── skills_list.txt # Base Extraction Dictionary
 │   └── skill_taxonomy.py # Categorization Logic
 ├── requirements.txt    # Python Dependencies
@@ -133,6 +133,16 @@ npm install
 npm run dev
 ```
 *App available at: `http://localhost:5173`*
+
+---
+
+## 🛠️ Troubleshooting
+
+### MongoDB Connection Issues (SSL/Whitelist)
+If you encounter `SSL handshake failed` or `Timeout` errors:
+1.  **IP Whitelisting**: Go to [MongoDB Atlas](https://cloud.mongodb.com/) -> **Network Access** -> **Add IP Address** -> **Add Current IP Address**.
+2.  **Dependencies**: Run `pip install -r requirements.txt` to ensure `certifi` is installed.
+3.  **Connection String**: Verify your `MONGO_URI` in the `.env` file is correct and includes the password.
 
 ---
 
