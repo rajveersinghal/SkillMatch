@@ -25,7 +25,7 @@ venv/
 .venv/
 
 # Environment Variables
-.env
+# .env (Uncommented as requested by user to push to GitHub)
 
 # Streamlit
 .streamlit/secrets.toml
