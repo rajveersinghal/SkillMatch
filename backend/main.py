@@ -9,12 +9,17 @@ import os
 app = FastAPI(title="SkillMatch API", root_path="/api")
 
 # CORS
+frontend_url = os.getenv("FRONTEND_URL", "")
+origins = [
+    "http://localhost:8501",  # Existing Streamlit
+    "http://localhost:5173",  # New React (Vite)
+]
+if frontend_url:
+    origins.append(frontend_url)
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:8501",  # Existing Streamlit
-        "http://localhost:5173",  # New React (Vite)
-    ],
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
