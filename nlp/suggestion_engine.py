@@ -1,8 +1,8 @@
 import os
 import logging
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
-import numpy as np
+import math
+from nlp.vectorizer import SimpleTfidfVectorizer
+from nlp.matcher import calculate_match_score
 from app_data.skill_taxonomy import skill_taxonomy
 
 # Co-occurrence map: If JD has Key, suggest Values if they are missing from Resume
@@ -24,7 +24,7 @@ class SuggestionEngine:
         self.all_taxonomy_skills = list(set(self.all_taxonomy_skills))
         
         # Initialize Vectorizer
-        self.vectorizer = TfidfVectorizer(ngram_range=(1, 2))
+        self.vectorizer = SimpleTfidfVectorizer()
 
     def suggest_cooccurrence(self, jd_skills, resume_skills):
         """Method 1: Co-occurrence based suggestions"""
@@ -53,24 +53,25 @@ class SuggestionEngine:
             # Pairwise similarity: Extract similarity between JD skills and Taxonomy skills
             # We fit on the union of both to have a shared vocabulary
             corpus = jd_skills + potential_skills
-            tfidf_matrix = self.vectorizer.fit_transform(corpus)
+            vectors = self.vectorizer.fit_transform(corpus)
             
             # Split matrix back into JD and Potential
-            jd_vectors = tfidf_matrix[:len(jd_skills)]
-            potential_vectors = tfidf_matrix[len(jd_skills):]
+            jd_vectors = vectors[:len(jd_skills)]
+            potential_vectors = vectors[len(jd_skills):]
 
-            # Calculate cosine similarity
-            cosine_scores = cosine_similarity(jd_vectors, potential_vectors)
-            
             suggestions = []
             for i in range(len(jd_skills)):
-                # Get indices of top_k highest scores for this JD skill
-                # Using argsort as a lightweight alternative to torch.topk
-                top_indices = np.argsort(cosine_scores[i])[-top_k:][::-1]
+                scores = []
+                for j in range(len(potential_skills)):
+                    score = calculate_match_score([jd_vectors[i], potential_vectors[j]])
+                    scores.append((score, potential_skills[j]))
                 
-                for idx in top_indices:
-                    if cosine_scores[i][idx] > 0.3: # Lower threshold for TF-IDF vs Embeddings
-                        suggestions.append(potential_skills[idx])
+                # Sort descending
+                scores.sort(key=lambda x: x[0], reverse=True)
+                
+                for k in range(min(top_k, len(scores))):
+                    if scores[k][0] > 30.0:  # 30% similarity threshold
+                        suggestions.append(scores[k][1])
             
             return list(set(suggestions))
         except Exception as e:
