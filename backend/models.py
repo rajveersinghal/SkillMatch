@@ -1,6 +1,6 @@
 from pydantic import BaseModel, EmailStr
 from datetime import datetime
-from typing import Optional
+from typing import Optional, Any
 
 class UserLogin(BaseModel):
     email: EmailStr
@@ -14,23 +14,23 @@ class Token(BaseModel):
     access_token: str
     token_type: str
 
-class DocumentCreate(BaseModel):
-    resume_text: str
-    job_description: str
+class SkillSchema(BaseModel):
+    skill: str
 
 class DocumentResponse(BaseModel):
     id: str
     user_email: str
+    resume_filename: Optional[str] = None
     resume_text: str
     job_description: str
     
-    # NLP Fields (Milestone 2)
-    processed_resume: Optional[str] = None
-    processed_jd: Optional[str] = None
-    resume_skills: list[str] = []
-    jd_skills: list[str] = []
-    match_score: Optional[float] = None
+    # NLP & AI Fields
+    match_percentage: float
+    matched_skills: list[str] = []
     missing_skills: list[str] = []
-    grouped_missing: Optional[dict[str, list[str]]] = None
+    gap_analysis: Optional[dict[str, list[str]]] = None
+    suggestions: list[str] = []
+    insights: Optional[dict[str, Any]] = None
     
     created_at: datetime
+    timestamp: datetime

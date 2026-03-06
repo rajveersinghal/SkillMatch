@@ -1,10 +1,8 @@
 import axios from 'axios';
 
+console.log("DEBUG: API Base URL initialized as:", import.meta.env.VITE_API_URL || '/api');
 const api = axios.create({
-    baseURL: import.meta.env.VITE_API_URL || '/api',
-    headers: {
-        'Content-Type': 'application/json',
-    },
+    baseURL: '/api',
 });
 
 // Add interceptor to add token to requests

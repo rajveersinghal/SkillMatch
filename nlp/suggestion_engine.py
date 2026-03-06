@@ -78,14 +78,40 @@ class SuggestionEngine:
             logging.error(f"Suggestion Engine Error: {str(e)}")
             return []
 
-    def get_all_suggestions(self, jd_skills, resume_skills):
-        co_occ = self.suggest_cooccurrence(jd_skills, resume_skills)
-        embeds = self.suggest_embeddings(jd_skills, resume_skills)
+    def get_actionable_roadmap(self, missing_skills):
+        """Method 3: Generate actionable learning roadmap for missing skills"""
+        roadmap = []
         
-        # Merge and remove duplicates
-        all_sug = list(set(co_occ + embeds))
-        # Remove skills already in JD (since they are already "missing skills")
-        jd_skills_set = set(s.lower() for s in jd_skills)
-        all_sug = [s for s in all_sug if s not in jd_skills_set]
-        
-        return all_sug
+        # Hardcoded dictionary for MVP, can be expanded to a DB/external API
+        resource_map = {
+            "react": {"url": "https://react.dev/learn", "time": "2 weeks", "type": "Documentation"},
+            "python": {"url": "https://docs.python.org/3/tutorial/", "time": "3 weeks", "type": "Tutorial"},
+            "machine learning": {"url": "https://www.coursera.org/learn/machine-learning", "time": "8 weeks", "type": "Course"},
+            "sql": {"url": "https://www.w3schools.com/sql/", "time": "1 week", "type": "Interactive"},
+            "javascript": {"url": "https://javascript.info/", "time": "2 weeks", "type": "Guide"},
+            "docker": {"url": "https://docs.docker.com/get-started/", "time": "1 week", "type": "Documentation"},
+            "aws": {"url": "https://aws.amazon.com/training/", "time": "4 weeks", "type": "Certification Path"},
+            "node.js": {"url": "https://nodejs.dev/learn", "time": "2 weeks", "type": "Tutorial"},
+            "pandas": {"url": "https://pandas.pydata.org/docs/user_guide/10min.html", "time": "3 days", "type": "Documentation"},
+            "git": {"url": "https://git-scm.com/book/en/v2", "time": "3 days", "type": "Book"}
+        }
+
+        for skill in missing_skills:
+            lower_skill = skill.lower()
+            if lower_skill in resource_map:
+                info = resource_map[lower_skill]
+                roadmap.append({
+                    "skill": skill,
+                    "url": info["url"],
+                    "estimated_time": info["time"],
+                    "resource_type": info["type"]
+                })
+            else:
+                roadmap.append({
+                    "skill": skill,
+                    "url": f"https://www.youtube.com/results?search_query={skill.replace(' ', '+')}+tutorial",
+                    "estimated_time": "Varies",
+                    "resource_type": "Video Search"
+                })
+                
+        return roadmap

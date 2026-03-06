@@ -1,28 +1,33 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Navbar from '../components/Navbar';
-import { ScoreMeter, SkillSection } from '../components/ResultComponents';
+import { ScoreMeter, SkillSection, RoadmapSection } from '../components/ResultComponents';
 import api from '../utils/api';
-import { Upload, FileText, Search, Loader2, Target, AlertCircle, Sparkles, CheckCircle2 } from 'lucide-react';
+import { Upload, FileText, Search, Loader2, Target, AlertCircle, Sparkles, CheckCircle2, FileUp, Info, Lightbulb, HelpCircle } from 'lucide-react';
 
 const Dashboard = () => {
-    const [resumeText, setResumeText] = useState('');
+    const [resumeFile, setResumeFile] = useState(null);
     const [jobDesc, setJobDesc] = useState('');
     const [loading, setLoading] = useState(false);
     const [results, setResults] = useState(null);
 
+    const handleFileChange = (e) => {
+        setResumeFile(e.target.files[0]);
+    };
+
     const handleAnalyze = async () => {
-        if (!resumeText || !jobDesc) return;
+        if (!resumeFile || !jobDesc) return;
         setLoading(true);
         try {
-            const response = await api.post('/documents/', {
-                resume_text: resumeText,
-                job_description: jobDesc
-            });
+            const formData = new FormData();
+            formData.append('resume_file', resumeFile);
+            formData.append('job_description', jobDesc);
+
+            const response = await api.post('/documents/', formData);
             setResults(response.data);
         } catch (error) {
             console.error('Analysis failed', error);
-            const errorMsg = error.response?.data?.detail || 'Analysis failed. Please check your inputs and ensure the backend is running.';
+            const errorMsg = error.response?.data?.detail || 'Analysis failed. Please check your inputs.';
             alert(errorMsg);
         }
         setLoading(false);
@@ -44,11 +49,11 @@ const Dashboard = () => {
 
                             <div className="flex items-center gap-4 mb-8">
                                 <div className="p-3 bg-blue-600 rounded-xl shadow-xl shadow-blue-500/20 text-white">
-                                    <FileText className="w-6 h-6" />
+                                    <FileUp className="w-6 h-6" />
                                 </div>
                                 <div>
-                                    <h2 className="text-xl font-black text-white tracking-tight leading-none">Resume & Job Comparison</h2>
-                                    <p className="text-white/40 font-black uppercase tracking-widest mt-1 text-[8px]">Fill in the details below</p>
+                                    <h2 className="text-xl font-black text-white tracking-tight leading-none">Smart Ingestion</h2>
+                                    <p className="text-white/40 font-black uppercase tracking-widest mt-1 text-[8px]">Upload your professional assets</p>
                                 </div>
                             </div>
 
@@ -56,36 +61,44 @@ const Dashboard = () => {
                                 <div className="space-y-4">
                                     <div className="flex items-center justify-between px-1">
                                         <label className="text-[8px] font-black text-white/40 uppercase tracking-[0.2em]">Job Description</label>
-                                        {jobDesc && <span className="text-[8px] font-black text-blue-400 uppercase tracking-widest leading-none">Captured</span>}
+                                        {jobDesc && <span className="text-[8px] font-black text-blue-400 uppercase tracking-widest leading-none">Syncing</span>}
                                     </div>
                                     <textarea
                                         value={jobDesc}
                                         onChange={(e) => setJobDesc(e.target.value)}
-                                        placeholder="Paste the job description here..."
+                                        placeholder="Paste the target job description here..."
                                         className="w-full h-40 p-5 bg-white/5 border border-white/5 rounded-2xl focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500/30 transition-all resize-none text-white text-xs font-medium custom-scrollbar"
                                     />
                                 </div>
 
                                 <div className="space-y-4">
                                     <div className="flex items-center justify-between px-1">
-                                        <label className="text-[8px] font-black text-white/40 uppercase tracking-[0.2em]">Your Resume</label>
-                                        {resumeText && <span className="text-[8px] font-black text-blue-400 uppercase tracking-widest leading-none">Captured</span>}
+                                        <label className="text-[8px] font-black text-white/40 uppercase tracking-[0.2em]">Resume (PDF / DOCX)</label>
+                                        {resumeFile && <span className="text-[8px] font-black text-emerald-400 uppercase tracking-widest leading-none">Ready</span>}
                                     </div>
-                                    <textarea
-                                        value={resumeText}
-                                        onChange={(e) => setResumeText(e.target.value)}
-                                        placeholder="Paste your resume text here..."
-                                        className="w-full h-40 p-5 bg-white/5 border border-white/5 rounded-2xl focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500/30 transition-all resize-none text-white text-xs font-medium custom-scrollbar"
-                                    />
+                                    <div className="relative group/upload">
+                                        <input
+                                            type="file"
+                                            onChange={handleFileChange}
+                                            accept=".pdf,.docx,.doc,.txt"
+                                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                                        />
+                                        <div className={`w-full py-10 px-5 border-2 border-dashed ${resumeFile ? 'border-emerald-500/30 bg-emerald-500/5' : 'border-white/10 bg-white/5'} rounded-2xl flex flex-col items-center justify-center gap-3 transition-all group-hover/upload:border-blue-500/30 group-hover/upload:bg-white/10`}>
+                                            <Upload className={`w-6 h-6 ${resumeFile ? 'text-emerald-400' : 'text-white/20'}`} />
+                                            <span className="text-xs font-bold text-white/40 uppercase tracking-widest">
+                                                {resumeFile ? resumeFile.name : 'Drop file or click to browse'}
+                                            </span>
+                                        </div>
+                                    </div>
                                 </div>
 
                                 <button
                                     onClick={handleAnalyze}
-                                    disabled={loading || !resumeText || !jobDesc}
+                                    disabled={loading || !resumeFile || !jobDesc}
                                     className="group relative w-full py-4 bg-blue-600 hover:bg-blue-500 disabled:bg-white/5 text-white font-black rounded-2xl transition-all flex items-center justify-center gap-3 shadow-xl shadow-blue-900/10 active:scale-[0.98] text-sm uppercase tracking-widest overflow-hidden"
                                 >
-                                    <span className="relative z-10">{loading ? 'Matching...' : 'Compare Skills'}</span>
-                                    {loading ? <Loader2 className="w-5 h-5 animate-spin relative z-10" /> : <Search className="w-5 h-5 relative z-10 group-hover:scale-110 transition-transform" />}
+                                    <span className="relative z-10">{loading ? 'Running Neural Analysis...' : 'Generate Strategic Match'}</span>
+                                    {loading ? <Loader2 className="w-5 h-5 animate-spin relative z-10" /> : <Sparkles className="w-5 h-5 relative z-10 group-hover:rotate-12 transition-transform" />}
                                     <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-indigo-400 opacity-0 group-hover:opacity-100 transition-opacity" />
                                 </button>
                             </div>
@@ -107,21 +120,77 @@ const Dashboard = () => {
 
                                         <div className="glass p-8 rounded-[2rem] border-white/5 shadow-2xl flex flex-col justify-center relative overflow-hidden group">
                                             <div className="absolute -right-8 -bottom-8 p-8 opacity-5 rotate-12 group-hover:rotate-0 transition-transform duration-700">
-                                                <Sparkles className="w-24 h-24 text-white" />
+                                                <Target className="w-24 h-24 text-white" />
                                             </div>
                                             <header className="flex items-center gap-2.5 mb-4">
-                                                <div className="p-2.5 bg-amber-500/10 rounded-lg">
-                                                    <Sparkles className="text-amber-500 w-5 h-5" />
+                                                <div className="p-2.5 bg-blue-500/10 rounded-lg">
+                                                    <Info className="text-blue-500 w-5 h-5" />
                                                 </div>
-                                                <h3 className="text-lg font-black text-white tracking-tight">Matching Analysis</h3>
+                                                <h3 className="text-lg font-black text-white tracking-tight italic">Strategic Fit</h3>
                                             </header>
-                                            <p className="text-white/80 text-xs leading-relaxed font-medium">
-                                                {results.match_percentage >= 80
-                                                    ? "Elite compatibility. Your profile shows exceptional synergy with the requirements."
-                                                    : results.match_percentage >= 50
-                                                        ? "Promising alignment. Core functions match but specialized gaps exist."
-                                                        : "Structural divergence. Profile lacks significant role-specific identifiers."}
+                                            <p className="text-white/80 text-[11px] leading-relaxed font-medium mb-4">
+                                                {results.insights?.status === 'success'
+                                                    ? results.insights.raw_narrative.split('\n')[0].replace(/Why this Match\?: /i, '')
+                                                    : results.match_percentage >= 80
+                                                        ? "Elite compatibility. Your profile shows exceptional semantic synergy."
+                                                        : "Competitive profile with specialized gaps detected."
+                                                }
                                             </p>
+
+                                            {results.insights?.recommended_role && (
+                                                <div className="mt-auto pt-4 border-t border-white/10">
+                                                    <p className="text-[9px] font-black text-white/40 uppercase tracking-widest mb-1">Recommended Role</p>
+                                                    <p className="text-sm font-bold text-blue-400 capitalize">{results.insights.recommended_role}</p>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    {/* AI DRIVEN INSIGHTS SECTION */}
+                                    <div className="grid grid-cols-1 gap-8">
+                                        <div className="glass p-10 rounded-[2.5rem] border-white/5 shadow-2xl relative overflow-hidden">
+                                            <div className="absolute top-0 right-0 p-10 opacity-5">
+                                                <Sparkles className="w-20 h-20 text-white" />
+                                            </div>
+                                            <h3 className="text-xl font-black text-white mb-8 tracking-tight flex items-center gap-3">
+                                                <Lightbulb className="w-6 h-6 text-amber-400" />
+                                                AI Strategic Narrative
+                                            </h3>
+
+                                            <div className="space-y-8">
+                                                <div className="p-6 bg-white/[0.02] border border-white/5 rounded-2xl">
+                                                    <h4 className="text-[9px] font-black text-blue-400 uppercase tracking-widest mb-3">Executive Summary</h4>
+                                                    <p className="text-white/70 text-xs leading-relaxed font-medium">
+                                                        {results.insights?.raw_narrative || "Deep analysis in progress..."}
+                                                    </p>
+                                                </div>
+
+                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                                    <div className="p-6 bg-emerald-500/5 border border-emerald-500/10 rounded-2xl">
+                                                        <h4 className="text-[9px] font-black text-emerald-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+                                                            <HelpCircle className="w-3.5 h-3.5" />
+                                                            Interview Prep
+                                                        </h4>
+                                                        <ul className="space-y-3">
+                                                            {results.insights?.interview_questions?.length > 0 ? (
+                                                                results.insights.interview_questions.map((q, i) => (
+                                                                    <li key={i} className="text-[10px] text-white/50 font-bold leading-tight flex gap-2">
+                                                                        <span className="text-emerald-500/50">•</span> {q}
+                                                                    </li>
+                                                                ))
+                                                            ) : (
+                                                                <li className="text-[10px] text-white/30 italic">Detailed questions generated in report...</li>
+                                                            )}
+                                                        </ul>
+                                                    </div>
+                                                    <div className="p-6 bg-amber-500/5 border border-amber-500/10 rounded-2xl">
+                                                        <h4 className="text-[9px] font-black text-amber-400 uppercase tracking-widest mb-4">Resume Pivot</h4>
+                                                        <p className="text-[10px] text-white/50 font-bold leading-relaxed">
+                                                            {results.insights?.resume_advice || "Optimization tip will appear here."}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
 
@@ -134,45 +203,14 @@ const Dashboard = () => {
                                             className="glass border-white/5"
                                             delay={0.1}
                                         />
-                                        <SkillSection
-                                            title="Missing Skills"
-                                            skills={results.missing_skills}
+                                        <RoadmapSection
+                                            title="Actionable Learning Roadmap"
+                                            roadmap={results.learning_roadmap}
                                             icon={AlertCircle}
-                                            colorClass="bg-red-500"
+                                            colorClass="bg-blue-500"
                                             className="glass border-white/5"
                                             delay={0.2}
                                         />
-                                    </div>
-
-                                    <div className="glass p-8 rounded-[2rem] border-white/5 shadow-2xl overflow-hidden relative group">
-                                        <div className="absolute top-0 right-0 p-8 opacity-5 scale-125 rotate-12 group-hover:rotate-0 transition-all duration-1000">
-                                            <Target className="w-32 h-32 text-white" />
-                                        </div>
-                                        <h3 className="text-xl font-black text-white mb-8 tracking-tight italic">Improvement Steps</h3>
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10">
-                                            {results.gap_analysis && Object.entries(results.gap_analysis).map(([cat, skills], idx) => (
-                                                <motion.div
-                                                    key={cat}
-                                                    initial={{ opacity: 0, y: 20 }}
-                                                    animate={{ opacity: 1, y: 0 }}
-                                                    transition={{ delay: 0.4 + (idx * 0.1) }}
-                                                    className="space-y-4"
-                                                >
-                                                    <div className="flex items-center justify-between">
-                                                        <span className="text-[9px] font-black text-white/40 uppercase tracking-[0.2em]">{cat}</span>
-                                                        <span className="text-blue-400 text-xs font-black font-mono">{(1 - (skills.length / 10)) * 100}% Fit</span>
-                                                    </div>
-                                                    <div className="h-2 bg-white/5 rounded-full overflow-hidden">
-                                                        <motion.div
-                                                            initial={{ width: 0 }}
-                                                            animate={{ width: `${(1 - (skills.length / 10)) * 100}%` }}
-                                                            transition={{ duration: 1.5, ease: 'easeOut', delay: 0.6 }}
-                                                            className="h-full bg-gradient-to-r from-blue-600 to-indigo-500 rounded-full"
-                                                        />
-                                                    </div>
-                                                </motion.div>
-                                            ))}
-                                        </div>
                                     </div>
                                 </motion.div>
                             </section>

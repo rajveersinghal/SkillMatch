@@ -6,7 +6,7 @@ from backend.routers import auth, documents
 import uvicorn
 import os
 
-app = FastAPI(title="SkillMatch API", root_path="/api")
+app = FastAPI(title="SkillMatch API")
 
 # CORS
 frontend_url = os.getenv("FRONTEND_URL", "")
@@ -25,24 +25,38 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.middleware("http")
+async def log_requests(request: Request, call_next):
+    print(f"DEBUG: Incoming {request.method} {request.url.path}")
+    print(f"DEBUG: Headers {dict(request.headers)}")
+    response = await call_next(request)
+    return response
+
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
     errors = exc.errors()
+    
+    # Debug logging for validation errors (SAFE - no body reading)
+    print(f"DEBUG: Validation Error for {request.method} {request.url.path}")
+    print(f"DEBUG: Errors: {errors}")
+    
     # Find the first error message that is readable
     msg = "Invalid data format"
     if errors:
         error = errors[0]
-        field = error.get("loc", ["field"])[-1]
-        msg = f"Invalid {field}: {error.get('msg', 'Format error')}"
+        # Pydantic V2 often uses 'loc' to indicate where the error is
+        loc = error.get("loc", [])
+        field = loc[-1] if loc else "data"
+        msg = f"ValidationError at {loc}: {error.get('msg')}"
         
     return JSONResponse(
         status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-        content={"detail": msg},
+        content={"detail": msg, "errors": errors},
     )
 
 # Routers
-app.include_router(auth.router, prefix="/auth", tags=["Auth"])
-app.include_router(documents.router, prefix="/documents", tags=["Documents"])
+app.include_router(auth.router, prefix="/api/auth", tags=["Auth"])
+app.include_router(documents.router, prefix="/api/documents", tags=["Documents"])
 
 @app.get("/")
 def read_root():
@@ -52,6 +66,12 @@ def read_root():
 def health_check():
     from backend.database import check_db_connection
     import os
+    try:
+        import python_multipart
+        multipart_status = "Available"
+    except ImportError:
+        multipart_status = "Missing"
+        
     is_online = check_db_connection()
     db_status = "Online" if is_online else "Offline"
     
@@ -60,9 +80,10 @@ def health_check():
     mongo_keys = [k for k in env_keys if "MONGO" in k.upper()]
     
     return {
-        "app_version": "3.0.0-FIX-DEPLOY",
+        "app_version": "V4-MANUAL-PARSING",
         "status": "Healthy" if is_online else "Degraded",
         "database": db_status,
+        "multipart": multipart_status,
         "mongo_env_keys": mongo_keys,
         "api": "Online",
         "env_count": len(env_keys)
