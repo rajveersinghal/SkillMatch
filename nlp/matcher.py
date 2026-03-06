@@ -1,8 +1,15 @@
 from sentence_transformers import SentenceTransformer, util
 import os
 
-# Initialize the model once. Using all-MiniLM-L6-v2 for speed/quality balance.
-model = SentenceTransformer('all-MiniLM-L6-v2')
+# Initialize the model lazily. Using all-MiniLM-L6-v2 for speed/quality balance.
+_model = None
+
+def get_model():
+    global _model
+    if _model is None:
+        print("DEBUG: Loading SentenceTransformer model...")
+        _model = SentenceTransformer('all-MiniLM-L6-v2')
+    return _model
 
 def calculate_match_score_semantic(resume_text: str, jd_text: str) -> float:
     """
@@ -12,6 +19,7 @@ def calculate_match_score_semantic(resume_text: str, jd_text: str) -> float:
     if not resume_text or not jd_text:
         return 0.0
         
+    model = get_model()
     # Encode both texts
     embeddings1 = model.encode(resume_text, convert_to_tensor=True)
     embeddings2 = model.encode(jd_text, convert_to_tensor=True)
