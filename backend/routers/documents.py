@@ -46,26 +46,11 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
 
 @router.post("/", response_model=Any)
 async def upload_document(
-    request: Request,
+    resume_file: UploadFile = File(...),
+    job_description: str = Form(...),
 ):
     print("CRITICAL_DEBUG: REACHED upload_document")
-    print(f"DEBUG: Content-Type: {request.headers.get('content-type')}")
-    
-    # Manually parse form data to avoid Pydantic "Invalid body" for Multipart
-    try:
-        form = await request.form()
-        resume_file = form.get('resume_file')
-        job_description = form.get('job_description')
-    except Exception as e:
-        print(f"DEBUG: Form Parsing Error: {str(e)}")
-        # Check if it was sent as JSON instead by mistake
-        try:
-            json_data = await request.json()
-            print(f"DEBUG: Received JSON instead: {json_data}")
-            resume_file = json_data.get('resume_file')
-            job_description = json_data.get('job_description')
-        except:
-            raise HTTPException(status_code=400, detail=f"Failed to parse request body: {str(e)}")
+    print(f"DEBUG: Processing file {resume_file.filename}")
 
     # Mock user for debug
     current_user = "debug_user@example.com"
