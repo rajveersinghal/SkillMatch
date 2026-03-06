@@ -136,13 +136,33 @@ npm run dev
 
 ---
 
-## 🛠️ Troubleshooting
+## 🛠️ Troubleshooting & Root Causes
 
-### MongoDB Connection Issues (SSL/Whitelist)
-If you encounter `SSL handshake failed` or `Timeout` errors:
-1.  **IP Whitelisting**: Go to [MongoDB Atlas](https://cloud.mongodb.com/) -> **Network Access** -> **Add IP Address** -> **Add Current IP Address**.
-2.  **Dependencies**: Run `pip install -r requirements.txt` to ensure `certifi` is installed.
-3.  **Connection String**: Verify your `MONGO_URI` in the `.env` file is correct and includes the password.
+### 1. MongoDB Connection Issues (SSL/Whitelist)
+*   **Root Cause**: Python's `certifi` library might be missing, causing SSL certificate validation to fail. Additionally, MongoDB Atlas enforces IP whitelisting by default.
+*   **Solution**:
+    1.  Run `pip install -r requirements.txt` to ensure `certifi` is installed.
+    2.  Go to **MongoDB Atlas** -> **Network Access** -> **Add IP Address** -> **Add Current IP Address**.
+    3.  Verify your `MONGO_URI` in `.env` is correct.
+
+### 2. File Upload Fails (422 Unprocessable Entity / Invalid Body)
+*   **Root Cause**: FastAPI requires `python-multipart` to decode `multipart/form-data` uploads (PDFs/DOCX). Without it, the server rejects file inputs.
+*   **Solution**: Ensure `python-multipart` is in `requirements.txt` and installed via `pip install python-multipart`.
+
+### 3. Frontend Routing Errors (404 Page Not Found on Refresh)
+*   **Root Cause**: Deployment platforms (like Vercel) serve static files. When refreshing a client-side route (e.g., `/dashboard`), the server looks for a physical file and fails.
+*   **Solution**: Ensure `vercel.json` is present in the frontend directory with a rewrite rule mapping all routes to `index.html`.
+
+### 4. Render/Vercel Backend Build Crashes (ModuleNotFoundError)
+*   **Root Cause**: Incorrect package names in dependencies (e.g., using `sklearn` instead of the official `scikit-learn`), causing builds to fail.
+*   **Solution**: Use the exact package names required by PyPI (e.g., `scikit-learn`, `dnspython`) in `requirements.txt`.
+
+### 5. API Connection Refused / 401 Unauthorized
+*   **Root Cause**: Missing or incorrect frontend environment variables, CORS mismatch, or missing JWT headers in Axios interceptors.
+*   **Solution**: 
+    1.  Verify `VITE_API_URL` is properly set in the frontend `.env`.
+    2.  Ensure backend CORS middleware allows the frontend domain.
+    3.  Confirm token logic correctly appends the `Bearer` token to request headers.
 
 ---
 
