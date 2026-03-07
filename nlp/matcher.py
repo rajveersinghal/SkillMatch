@@ -18,24 +18,23 @@ def get_model():
 
 def calculate_match_score_semantic(resume_text: str, jd_text: str) -> float:
     """
-    Calculates semantic similarity score (0–100%) using Sentence-Transformers.
-    This captures intent and meaning, not just keyword overlap.
+    Replaced heavy ML model with a lightweight keyword overlap (Jaccard similarity proxy)
+    to prevent out-of-memory errors on Render.
     """
     if not resume_text or not jd_text:
         return 0.0
         
-    model = get_model()
-    from sentence_transformers import util
+    # Convert to lowercase words for simple matching
+    import re
+    resume_words = set(re.findall(r'\b\w+\b', resume_text.lower()))
+    jd_words = set(re.findall(r'\b\w+\b', jd_text.lower()))
     
-    # Encode both texts
-    embeddings1 = model.encode(resume_text, convert_to_tensor=True)
-    embeddings2 = model.encode(jd_text, convert_to_tensor=True)
-    
-    # Compute cosine similarity
-    cosine_scores = util.cos_sim(embeddings1, embeddings2)
-    
-    # Convert back to percentage (0.0 to 1.0 -> 0 to 100)
-    score = float(cosine_scores[0][0]) * 100
+    if not jd_words:
+        return 0.0
+        
+    # Calculate simple overlap percentage of JD words found in resume
+    overlap = jd_words.intersection(resume_words)
+    score = (len(overlap) / len(jd_words)) * 100.0
     
     # Clip to 0-100 just in case
     score = max(0, min(100, score))

@@ -91,23 +91,6 @@ def health_check():
     }
 
 
-# Background Preload
-import threading
-
-def preload_heavy_modules():
-    print("DEBUG: Starting background thread to preload heavy modules (torch, sentence_transformers)...")
-    try:
-        from nlp.matcher import get_model
-        get_model()  # This will import torch and download/load the model
-        print("INFO: Background model preload complete. Ready for fast matching.")
-    except Exception as e:
-        print(f"ERROR during background model preload: {e}")
-
-@app.on_event("startup")
-def startup_event():
-    # Start the background preload thread so uvicorn binds the port immediately
-    threading.Thread(target=preload_heavy_modules, daemon=True).start()
-
 # Build Salt: 1772300000
 if __name__ == "__main__":
     uvicorn.run("backend.main:app", host="0.0.0.0", port=8000, reload=True)
