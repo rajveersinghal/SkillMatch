@@ -27,11 +27,15 @@ const ProtectedRoute = ({ children, adminOnly = false }) => {
 function App() {
   // Wake up the backend on initial load to prevent cold start delays
   useEffect(() => {
-    api.get('/health').catch(() => console.log('Backend waking up...'));
+    // We use the base URL without /api because /health is at the root level in the backend
+    const apiUrl = import.meta.env.VITE_API_URL || '';
+    const healthUrl = apiUrl.replace(/\/api\/?$/, '') + '/health';
+
+    fetch(healthUrl).catch(() => console.log('Backend waking up...'));
 
     // Optional: Keep pinging every 14 minutes just in case the tab stays open
     const interval = setInterval(() => {
-      api.get('/health').catch(() => { });
+      fetch(healthUrl).catch(() => { });
     }, 14 * 60 * 1000);
 
     return () => clearInterval(interval);
