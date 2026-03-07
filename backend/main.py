@@ -13,6 +13,7 @@ frontend_url = os.getenv("FRONTEND_URL", "")
 origins = [
     "http://localhost:8501",  # Existing Streamlit
     "http://localhost:5173",  # New React (Vite)
+    "https://skill-match-4est.vercel.app", # Vercel Frontend
 ]
 if frontend_url:
     origins.append(frontend_url)
