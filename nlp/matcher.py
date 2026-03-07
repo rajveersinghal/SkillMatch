@@ -1,14 +1,19 @@
-from sentence_transformers import SentenceTransformer, util
 import os
+import threading
 
 # Initialize the model lazily. Using all-MiniLM-L6-v2 for speed/quality balance.
 _model = None
+_model_lock = threading.Lock()
 
 def get_model():
     global _model
-    if _model is None:
-        print("DEBUG: Loading SentenceTransformer model...")
-        _model = SentenceTransformer('all-MiniLM-L6-v2')
+    with _model_lock:
+        if _model is None:
+            print("DEBUG: Importing sentence_transformers...")
+            from sentence_transformers import SentenceTransformer
+            print("DEBUG: Loading SentenceTransformer model 'all-MiniLM-L6-v2'...")
+            _model = SentenceTransformer('all-MiniLM-L6-v2')
+            print("DEBUG: SentenceTransformer model loaded successfully.")
     return _model
 
 def calculate_match_score_semantic(resume_text: str, jd_text: str) -> float:
@@ -20,6 +25,8 @@ def calculate_match_score_semantic(resume_text: str, jd_text: str) -> float:
         return 0.0
         
     model = get_model()
+    from sentence_transformers import util
+    
     # Encode both texts
     embeddings1 = model.encode(resume_text, convert_to_tensor=True)
     embeddings2 = model.encode(jd_text, convert_to_tensor=True)
