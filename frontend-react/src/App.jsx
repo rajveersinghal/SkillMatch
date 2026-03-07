@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
 import { AuthProvider, useAuth } from './context/AuthContext';
@@ -8,6 +8,7 @@ import Dashboard from './pages/Dashboard';
 import HistoryPage from './pages/HistoryPage';
 import AdminPanel from './pages/AdminPanel';
 import LandingPage from './pages/LandingPage';
+import api from './utils/api';
 
 const ProtectedRoute = ({ children, adminOnly = false }) => {
   const { token, loading, user } = useAuth();
@@ -24,6 +25,18 @@ const ProtectedRoute = ({ children, adminOnly = false }) => {
 };
 
 function App() {
+  // Wake up the backend on initial load to prevent cold start delays
+  useEffect(() => {
+    api.get('/health').catch(() => console.log('Backend waking up...'));
+
+    // Optional: Keep pinging every 14 minutes just in case the tab stays open
+    const interval = setInterval(() => {
+      api.get('/health').catch(() => { });
+    }, 14 * 60 * 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <AuthProvider>
       <Router>
