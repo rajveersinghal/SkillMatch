@@ -7,12 +7,23 @@ export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [token, setToken] = useState(localStorage.getItem('token'));
     const [loading, setLoading] = useState(true);
+    const [backendWakingUp, setBackendWakingUp] = useState(false);
+
+    useEffect(() => {
+        // Wake up backend
+        const healthUrl = (import.meta.env.VITE_API_URL || '').replace(/\/api\/?$/, '') + '/health';
+        setBackendWakingUp(true);
+        fetch(healthUrl)
+            .then(() => setBackendWakingUp(false))
+            .catch(() => {
+                console.log('Backend waking up...');
+                // We keep it true if it fails initially, assuming it's still waking up
+            });
+    }, []);
 
     useEffect(() => {
         if (token) {
             localStorage.setItem('token', token);
-            // Optional: fetch user profile if needed
-            // setUser(...) 
         } else {
             localStorage.removeItem('token');
             setUser(null);
@@ -48,7 +59,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     return (
-        <AuthContext.Provider value={{ user, token, loading, login, register, logout }}>
+        <AuthContext.Provider value={{ user, token, loading, login, register, logout, backendWakingUp }}>
             {children}
         </AuthContext.Provider>
     );

@@ -59,6 +59,11 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
 app.include_router(auth.router, prefix="/api/auth", tags=["Auth"])
 app.include_router(documents.router, prefix="/api/documents", tags=["Documents"])
 
+@app.on_event("startup")
+def startup_db_client():
+    from backend.database import ensure_indexes
+    ensure_indexes()
+
 @app.get("/")
 def read_root():
     return {"message": "SkillMatch API is running 🚀"}

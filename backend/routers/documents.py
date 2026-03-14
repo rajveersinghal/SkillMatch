@@ -43,13 +43,8 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
 async def upload_document(
     resume_file: UploadFile = File(...),
     job_description: str = Form(...),
+    current_user: str = Depends(get_current_user)
 ):
-    print("CRITICAL_DEBUG: REACHED upload_document")
-    print(f"DEBUG: Processing file {resume_file.filename}")
-
-    # Mock user for debug
-    current_user = "debug_user@example.com"
-    
     docs_col = get_document_collection()
     if docs_col is None:
         raise HTTPException(status_code=503, detail="Database connection failed.")
@@ -73,7 +68,6 @@ async def upload_document(
         jd_skills = extract_skills(processed_jd)
 
         # Step 3: Semantic Matching
-        # We use the new semantic score for the main result
         match_score = calculate_match_score_semantic(resume_text, job_description)
 
         # Step 4: Gap Analysis
@@ -109,7 +103,6 @@ async def upload_document(
         return analysis_result
 
     except Exception as e:
-        print(f"Analysis Error: {str(e)}")
         raise HTTPException(
             status_code=500,
             detail=f"Neural Analysis Failed: {str(e)}"

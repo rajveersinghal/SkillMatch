@@ -18,8 +18,6 @@ def get_client():
             return None
         try:
             _client = MongoClient(mongo_uri, tlsCAFile=certifi.where())
-            # Test connection immediately
-            _client.admin.command('ismaster')
         except Exception as e:
             error_msg = str(e)
             print(f"DATABASE INITIALIZATION ERROR: {error_msg}")
@@ -35,6 +33,20 @@ def get_client():
             _client = None
             return None
     return _client
+
+def ensure_indexes():
+    """Create necessary database indexes for performance."""
+    try:
+        client = get_client()
+        if client:
+            db = client["skillmatch"]
+            # Unique index on email for fast lookups and data integrity
+            db["users"].create_index("email", unique=True)
+            print("INFO: Database indexes verified/created.")
+            return True
+    except Exception as e:
+        print(f"ERROR creating indexes: {e}")
+    return False
 
 def get_db():
     global _db

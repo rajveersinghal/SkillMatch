@@ -42,14 +42,13 @@ graph TD
 
 The "Neural Pulse" of SkillMatch lies in its multi-stage NLP pipeline:
 
-1.  **Ingestion & Preprocessing**: Raw text is extracted from PDFs/DOCX and normalized (case folding, stop-word removal, lemmatization).
+1.  **Ingestion & Preprocessing**: Raw text is extracted from PDFs/DOCX and normalized (case folding, stop-word removal).
 2.  **Entity Recognition**: The `Skill Extractor` uses high-precision Regex patterns with word-boundary awareness to identify technical and soft skills.
-3.  **Vectorization**: Documents are transformed into Sparse Vectors (TF-IDF) to capture the relative importance of terms.
-4.  **Similarity Scoring**: `Cosine Similarity` is calculated between the Resume and JD vectors to produce a match percentage.
-5.  **Gap Analysis**: Missing skills are identified by comparing extracted sets and categorized via a curated **Skill Taxonomy**.
-6.  **Intelligent Suggestions**:
+3.  **Semantic Match Proxy**: Calculates overlap and term frequency to produce a robust match percentage without heavy model overhead.
+4.  **Gap Analysis**: Missing skills are identified by comparing extracted sets and categorized via a curated **Skill Taxonomy**.
+5.  **Intelligent Suggestions**:
     *   **Co-occurrence**: Suggests tools often used together (e.g., Python → Pandas).
-    *   **Semantic Proximity**: Uses `Sentence-Transformers` (MiniLM) to find related skills in high-dimensional vector space.
+    *   **Roadmap Generation**: Maps missing skills to actionable learning resources.
 
 ---
 
@@ -67,9 +66,9 @@ The "Neural Pulse" of SkillMatch lies in its multi-stage NLP pipeline:
 ## 🛠️ Tech Stack
 
 *   **Frontend**: React 19, Vite, Tailwind CSS 4, Framer Motion, Lucide Icons.
-*   **Backend**: FastAPI, Uvicorn, Jose (JWT).
+*   **Backend**: FastAPI, Uvicorn, Jose (JWT), Pydantic.
 *   **Database**: MongoDB.
-*   **NLP Engine**: Scikit-Learn (TF-IDF), SpaCy (Entities), Sentence-Transformers (Embeddings), NLTK.
+*   **NLP Engine**: Lightweight Regex-based extraction, Custom Suggestion Engine.
 
 ---
 

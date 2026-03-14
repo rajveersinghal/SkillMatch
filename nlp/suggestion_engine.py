@@ -20,6 +20,28 @@ class SuggestionEngine:
         for cat_skills in skill_taxonomy.values():
             self.all_taxonomy_skills.extend(cat_skills)
         self.all_taxonomy_skills = list(set(self.all_taxonomy_skills))
+    def suggest_cooccurrence(self, jd_skills, resume_skills):
+        """Method 1: Suggest skills based on JD skills"""
+        suggestions = []
+        for skill in jd_skills:
+            if skill.lower() in CO_OCCURRENCE_MAP:
+                suggestions.extend(CO_OCCURRENCE_MAP[skill.lower()])
+        # Filter out what's already in the resume (optional but usually good)
+        resume_lower = [s.lower() for s in resume_skills]
+        return list(set([s for s in suggestions if s.lower() not in resume_lower]))
+
+    def suggest_embeddings(self, jd_skills, resume_skills):
+        """Method 2: Placeholder for semantic/embedding based suggestions"""
+        # In a full implementation, this might use vector search
+        # For now, we return placeholder related skills from taxonomy
+        return ["keras", "pytorch", "tensorflow"] if "deep learning" in [s.lower() for s in jd_skills] else []
+
+    def get_all_suggestions(self, jd_skills, resume_skills):
+        """Combine all suggestion methods"""
+        co_sug = self.suggest_cooccurrence(jd_skills, resume_skills)
+        emb_sug = self.suggest_embeddings(jd_skills, resume_skills)
+        return list(set(co_sug + emb_sug))
+
     def get_actionable_roadmap(self, missing_skills):
         """Method 3: Generate actionable learning roadmap for missing skills"""
         roadmap = []

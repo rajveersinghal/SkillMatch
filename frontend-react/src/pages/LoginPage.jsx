@@ -10,7 +10,7 @@ const LoginPage = () => {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
 
-    const { login } = useAuth();
+    const { login, backendWakingUp } = useAuth();
     const navigate = useNavigate();
 
     const validateEmail = (email) => {
@@ -105,6 +105,17 @@ const LoginPage = () => {
                                 />
                             </div>
                         </div>
+
+                        {backendWakingUp && !error && (
+                            <motion.div
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                className="p-4 glass bg-blue-500/10 border-blue-500/20 rounded-2xl text-blue-400 text-[10px] font-bold leading-relaxed flex items-center gap-3"
+                            >
+                                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                Analyzing Cloud Infrastructure... (Warming up)
+                            </motion.div>
+                        )}
 
                         {error && (
                             <motion.div

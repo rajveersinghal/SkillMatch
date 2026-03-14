@@ -8,12 +8,9 @@ python-jose[cryptography]
 passlib[bcrypt]
 python-dotenv
 certifi
-sentence-transformers
 PyMuPDF
 python-docx
 google-generativeai
-numpy
-scikit-learn
 python-multipart
 pydantic-settings
 
