@@ -66,7 +66,7 @@ def startup_db_client():
 
 @app.get("/")
 def read_root():
-    return {"message": "SkillMatch API is running 🚀"}
+    return {"message": "SkillMatch API is running (V5) 🚀"}
 
 @app.get("/health")
 def health_check():
@@ -86,7 +86,7 @@ def health_check():
     mongo_keys = [k for k in env_keys if "MONGO" in k.upper()]
     
     return {
-        "app_version": "V4-MANUAL-PARSING",
+        "app_version": "V5-MANUAL-PARSING",
         "status": "Healthy" if is_online else "Degraded",
         "database": db_status,
         "multipart": multipart_status,
@@ -96,6 +96,6 @@ def health_check():
     }
 
 
-# Build Salt: 1772300000
+# Build Salt: 1772300001
 if __name__ == "__main__":
     uvicorn.run("backend.main:app", host="0.0.0.0", port=8000, reload=True)
